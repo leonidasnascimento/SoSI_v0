@@ -27,7 +27,7 @@ def getDividendModel(stocks):
         return returnObj
 
 def getStocksJson():
-        return open("C:\git\SoSI\Backend\StockGatheringLogic\mock\dividendMock.json", 'r') # Mock for tests
+        return open("C:\git\SoSI\backend\stock\mock\dividendMock.json", 'r') # Mock for tests
         # return urllib.request.urlopen(SERVICE_ENDPOINT) # Production
 
 stocks = json.load(getStocksJson())
