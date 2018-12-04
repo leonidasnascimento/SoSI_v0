@@ -1,4 +1,4 @@
-class dividendModel:
+class DividendModel:
     Code: ""
     Company: ""
     Sector: ""
