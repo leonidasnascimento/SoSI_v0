@@ -8,14 +8,14 @@ class DividendModel:
     StockAvailableAmount: 0
     Valuation: 0.00
     Equity: 0.00
-    Avarage21Negociation: 0
-    DividendPeriod: ""
+    Avg21Negociation: 0
+    DividendPeriod: 0
     DividendLastPrice: 0.00
     DividendTotalValueShared: 0.00
     NetProfit: 0.00
     DividendYeld: 0.00
-    AvgPayoutTwelveMonths: 0.00
-    AvgPayoutFiveYears: 0.00
+    AvgPayout12Months: 0.00
+    AvgPayout5Years: 0.00
     MajorShareholder: ""
 
     def setAvaragePayout(self, payoutArray, netProfitArray):

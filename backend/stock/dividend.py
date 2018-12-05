@@ -5,7 +5,7 @@ sys.path.append("\\git\\SoSI\\backend")
 
 from models.dividendModel import DividendModel
 from helpers.parser import Parser
-from database.dividendDb import DividendDb
+from database.dividendDbCommand import DividendDbCommand
 
 ### GLOBAL CONSTANTS ###
 SERVICE_ENDPOINT = "https://www.bussoladoinvestidor.com.br/nb/api/v1/stocks"
@@ -28,26 +28,29 @@ def GetDividendModel(stocks):
                 dividendModelAux.Type = stock[FIELD_TYPE]
                 dividendModelAux.StockPrice = Parser.ParseFloat(stock["price"]) 
                 dividendModelAux.Sector = stock["sector"]
+                dividendModelAux.SecondSector = ""
                 dividendModelAux.Equity = Parser.ParseFloat(stock["equity"])
-                dividendModelAux.Avarage21Negociation = 0
-                dividendModelAux.AvgPayoutFiveYears = 0
-                dividendModelAux.AvgPayoutTwelveMonths = 0
+                dividendModelAux.Avg21Negociation = Parser.ParseFloat("")
+                dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
+                dividendModelAux.AvgPayout12Months = Parser.ParseFloat("")
                 dividendModelAux.DividendLastPrice = Parser.ParseFloat("")
-                dividendModelAux.DividendPeriod = ""
-                dividendModelAux.DividendTotalValueShared = 0.00
-                dividendModelAux.DividendYeld = 0.00
+                dividendModelAux.DividendPeriod = 0
+                dividendModelAux.DividendTotalValueShared = Parser.ParseFloat("")
+                dividendModelAux.DividendYeld = Parser.ParseFloat("")
                 dividendModelAux.MajorShareholder = ""
-                dividendModelAux.NetProfit = Parser.ParseFloat(stock["profit"])      
+                dividendModelAux.NetProfit = Parser.ParseFloat(stock["profit"])
+                dividendModelAux.Valuation = Parser.ParseFloat("")
+                dividendModelAux.StockAvailableAmount = 0
                 returnObj.append(dividendModelAux)
         return returnObj
 
 def GetStocksJson(strEndPoint):
-        return open("C:\git\SoSI\\backend\stock\mock\dividendMock.json", "r") # Mock for tests
-        # return urllib.request.urlopen(strEndPoint) # Production
+        # return open("C:\git\SoSI\\backend\stock\mock\dividendMock.json", "r") # Mock for tests
+        return urllib.request.urlopen(strEndPoint) # Production
 
 def Save(lstDividend):
-        for stock in stocks:
-                if DividendDb().Save(stock) == False:
+        for dividend in lstDividend:
+                if DividendDbCommand().Save(dividend) == False:
                         return False
         return True 
 
@@ -57,3 +60,5 @@ divdendObj = GetDividendModel(filteredStocks)
 
 if Save(divdendObj) == False:
         raise SystemError()
+
+print ("DONE!!!")
