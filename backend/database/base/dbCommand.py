@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 
 class DbCommand:
-    def Save(self, strCommand):
+    def Commit(self, strCommand):
         try:
             conn = mysql.connector.connect(host='127.0.0.1',
                                        database='sys',
@@ -10,7 +10,7 @@ class DbCommand:
                                        password='sosidb')
             if conn.is_connected():
                 cursor = conn.cursor()
-                cursor.execute(strCommand)
+                rowsAffected = cursor.execute(strCommand)
                 
                 conn.commit()
                 
@@ -22,9 +22,45 @@ class DbCommand:
             cursor.close()
             conn.close()
             pass
-    
-    def Update(self, strCommand):
-        return True
-    
-    def Select(self, strCommand):
-        return object
+
+    def CallProcedure(self, strCommand, args):
+        try:
+            conn = mysql.connector.connect(host='127.0.0.1',
+                                       database='sys',
+                                       user='sosi',
+                                       password='sosidb')
+            
+            if conn.is_connected():
+                cursor = conn.cursor()
+                cursor.callproc(strCommand, args)
+                
+                return True
+            return False
+        except Error as e:
+            print(e)
+            pass
+        finally:
+            cursor.close()
+            conn.close()
+            pass    
+
+
+    def Query(self, strCommand):
+        try:
+            returnObj = tuple
+            conn = mysql.connector.connect(host='127.0.0.1',
+                                       database='sys',
+                                       user='sosi',
+                                       password='sosidb')
+            if conn.is_connected():
+                cursor = conn.cursor()
+                cursor.execute(strCommand)
+                returnObj = cursor.fetchone()
+        except Error as e:
+            print(e)
+            pass
+        finally:
+            cursor.close()
+            conn.close()
+
+            return returnObj
