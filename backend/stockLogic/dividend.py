@@ -3,10 +3,13 @@ import json
 import pprint
 import sys
 import requests
+import urllib
 
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
 
+from stock import Stock
+from bs4 import BeautifulSoup
 from models.dividendModel import DividendModel
 from helpers.parser import Parser
 from database.dividendDbCommand import DividendDbCommand
@@ -17,6 +20,7 @@ STOCK_TYPE_TO_FILTER = "ON"  # Leave it empty for all types
 
 ### GLOBAL VARIABLES ###
 gStockTotalAmountObj = None
+global_AvailableStocksSingleton = None
 
 # FIELDS #
 FIELD_RESULTS = "results"
@@ -25,7 +29,6 @@ FIELD_TYPE = "type"
 # METHODS #
 def FilterStocks(stocks, type):
     return [s for s in stocks[FIELD_RESULTS] if s[FIELD_TYPE] == type]
-
 
 def GetAvg21Negociation(stock_code):
     url = "https://www.infomoney.com.br/webservices/services.asmx/GetHistoryQuotesDataTable"
@@ -92,7 +95,20 @@ def GetTotalAvailableStockSingleton():
         return json.loads(totalAmoutAux) if totalAmoutAux != '' else None        
 
 def GetTotalAvailableStock(stock_code):
-    return 0.00
+        if (gStockTotalAmountObj is None):
+            GetTotalAvailableStockSingleton()
+
+        if (gStockTotalAmountObj is None):
+            return 0
+
+        totalStr = [s[1] for s in gStockTotalAmountObj["aaData"] if 1 == 1]
+
+        if (totalStr is None) or (len(totalStr) == 0):
+            return 0
+
+        total = Parser.ParseOrdinalNumber(totalStr[0])
+
+        return total
 
 def GetDividendModel(stocks):
     returnObj = []
@@ -125,6 +141,7 @@ def Save(lstDividend):
             return False
     return True
 
+global_AvailableStocksSingleton = Stock.GetAvailableStocksSingleton()
 gStockTotalAmountObj = GetTotalAvailableStockSingleton()
 stocks = requests.request("GET", SERVICE_ENDPOINT).json()
 filteredStocks = FilterStocks(stocks, STOCK_TYPE_TO_FILTER)

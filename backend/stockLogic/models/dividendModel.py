@@ -17,6 +17,7 @@ class DividendModel:
     AvgPayout12Months: 0.00
     AvgPayout5Years: 0.00
     MajorShareholder: ""
+    DetailsPage: ""
 
     def setAvaragePayout(self, payoutArray, netProfitArray):
         return (sum(payoutArray, 0)/ (sum(payoutArray, 0) if netProfitArray != 0 else 1))
