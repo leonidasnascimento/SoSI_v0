@@ -89,7 +89,7 @@ def GetDividendModel(stocks):
         dividendModelAux.MajorShareholder = ""
         dividendModelAux.NetProfit = Parser.ParseFloat(stock["profit"])
         dividendModelAux.Valuation = Parser.ParseFloat("")
-        dividendModelAux.StockAvailableAmount = GetTotalAvailableStock(stock["code"])
+        dividendModelAux.StockAvailableAmount = 0
         returnObj.append(dividendModelAux)
     return returnObj
 
@@ -100,7 +100,7 @@ def Save(lstDividend):
     return True
 
 stockObj = Stock() 
-gStockTotalAmountObj = GetTotalAvailableStockSingleton()
+gStockTotalAmountObj = None
 stocks = requests.request("GET", SERVICE_ENDPOINT).json()
 filteredStocks = FilterStocks(stocks, STOCK_TYPE_TO_FILTER)
 divdendObj = GetDividendModel(filteredStocks)

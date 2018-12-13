@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 #############################
 class Stock(object):
     AvailableStockCode = None
-    StockAmountPerStockCode = None
+    StocksBasicInfo = None
     
     ## CONSTANTS ##
     MAIN_URL = "http://www.fundamentus.com.br/%s"
@@ -18,14 +18,13 @@ class Stock(object):
     def __init__ (self):
         self.AvailableStockCode = self.GetAvailableStocks()
         print("BOVESPA available stocks successfully acquired!")
-        self.StockAmountPerStockCode = self.GetStockAmountPerStockCode()
+        self.StocksBasicInfo = self.GetStocksBasicInfo()
         print("BOVESPA stocks offered amount successfully acquired!")
 
     def GetAvailableStocks(self):
         __availableStocksSingleton = None
 
-        htmlPage = urllib.request.urlopen(
-            self.MAIN_URL % "detalhes.php")
+        htmlPage = urllib.request.urlopen(self.MAIN_URL % "detalhes.php")
         stocksPage = BeautifulSoup(htmlPage.read(), features="html.parser")
 
         if stocksPage is None:
@@ -61,16 +60,20 @@ class Stock(object):
                 continue
             
             stockAux.append(str(det[0].get_text()).rstrip(None))
-            stockAux.append(str(columns[1].get_text()).rstrip(None))
-            stockAux.append(str(columns[2].get_text()).rstrip(None))
 
             __availableStocksSingleton.append(stockAux)
 
         return __availableStocksSingleton
 
-    @staticmethod
-    def GetStockAmountPerStockCode(self):
+    def GetStocksBasicInfo(self):
         if (len(self.AvailableStockCode) == 0):
             self.AvailableStockCode = self.GetAvailableStocks()
 
         for stock in self.AvailableStockCode:
+            htmlPage = urllib.request.urlopen(self.MAIN_URL % stock[0])
+            stocksPage = BeautifulSoup(htmlPage.read(), features="html.parser")
+
+            if stocksPage is None:
+                return None
+
+            stocksTbl = stocksPage.findChildren("table")
