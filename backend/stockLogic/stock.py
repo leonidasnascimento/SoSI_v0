@@ -3,33 +3,43 @@ import requests
 import urllib
 from bs4 import BeautifulSoup
 
-## GLOBAL ##
+#############################
+##                         ##   
+## STOCK SPECIALIZED CLASS ##
+##                         ##
+#############################
+class Stock(object):
+    AvailableStockCode = None
+    StockAmountPerStockCode = None
+    
+    ## CONSTANTS ##
+    MAIN_URL = "http://www.fundamentus.com.br/%s"
 
+    def __init__ (self):
+        self.AvailableStockCode = self.GetAvailableStocks()
+        print("BOVESPA available stocks successfully acquired!")
+        self.StockAmountPerStockCode = self.GetStockAmountPerStockCode()
+        print("BOVESPA stocks offered amount successfully acquired!")
 
-class Stock:
-    @staticmethod
-    def GetAvailableStocksSingleton():
-        __global_AvailableStocksSingleton = None
-
-        if __global_AvailableStocksSingleton is not None:
-            return __global_AvailableStocksSingleton
+    def GetAvailableStocks(self):
+        __availableStocksSingleton = None
 
         htmlPage = urllib.request.urlopen(
-            "http://www.fundamentus.com.br/detalhes.php")
+            self.MAIN_URL % "detalhes.php")
         stocksPage = BeautifulSoup(htmlPage.read(), features="html.parser")
 
         if stocksPage is None:
-            return __global_AvailableStocksSingleton
+            return __availableStocksSingleton
 
         stocksTbl = stocksPage.findChildren("table")
 
         if len(stocksTbl) == 0:
-            return __global_AvailableStocksSingleton
+            return __availableStocksSingleton
 
         stocksRow = stocksTbl[0].findChildren("tr")
 
         if len(stocksRow) == 0:
-            return __global_AvailableStocksSingleton
+            return __availableStocksSingleton
 
         for row in stocksRow:
             if row is None:
@@ -40,7 +50,7 @@ class Stock:
             if columns is None or len(columns) == 0:
                 continue
 
-            __global_AvailableStocksSingleton = __global_AvailableStocksSingleton if __global_AvailableStocksSingleton is not None else []
+            __availableStocksSingleton = __availableStocksSingleton if __availableStocksSingleton is not None else []
             det = columns[0].findChildren("a")
 
             stockAux = []
@@ -50,21 +60,17 @@ class Stock:
             else:
                 continue
             
-            stockAux.append(str(det.next()).rstrip(None))
-            stockAux.append(columns[1].get_text())
-            stockAux.append(columns[2].get_text())
+            stockAux.append(str(det[0].get_text()).rstrip(None))
+            stockAux.append(str(columns[1].get_text()).rstrip(None))
+            stockAux.append(str(columns[2].get_text()).rstrip(None))
 
-            __global_AvailableStocksSingleton.append(stockAux)
+            __availableStocksSingleton.append(stockAux)
 
-        return __global_AvailableStocksSingleton
+        return __availableStocksSingleton
 
     @staticmethod
-    def GetTagContent(contentArr):
-        if (contentArr is None) or (len(contentArr.contents) == 0):
-            return ""
-        if (len(contentArr.contents) > 0) and (contentArr.contents[0].contents is None):
-            return str(str(contentArr.contents[0]).lstrip(None)).rstrip(None)
-        if (len(contentArr.contents[0].contents) == 0):
-            return str(str(contentArr).lstrip(None)).rstrip(None)
+    def GetStockAmountPerStockCode(self):
+        if (len(self.AvailableStockCode) == 0):
+            self.AvailableStockCode = self.GetAvailableStocks()
 
-        return Stock.GetTagContent(contentArr.contents[0])
+        for stock in self.AvailableStockCode:
