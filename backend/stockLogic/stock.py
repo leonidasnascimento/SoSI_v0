@@ -52,20 +52,25 @@ class Stock(object):
 
             columns = row.findChildren("td")
 
-            if columns is None or len(columns) == 0:
+            if columns is None or len(columns) != 3:
                 continue
 
             __availableStocksSingleton = __availableStocksSingleton if __availableStocksSingleton is not None else []
+            stockAux = {}
             det = columns[0].findChildren("a")
-
-            stockAux = []
-
+            companyName = "%s - %s" % (columns[1].get_text(), columns[2].get_text()) 
+            
             if (det is not None) and len(det) > 0:
-                stockAux.append(str(det[0].attrs["href"]).rstrip(None))
+                stockDetails = str(det[0].attrs["href"]).rstrip(None).lstrip(None)
             else:
                 continue
             
-            stockAux.append(str(det[0].get_text()).rstrip(None))
+            stockCode = str(det[0].get_text()).rstrip(None)
+
+            ## APPENDING ITEMS
+            stockAux["stockCode"] = stockCode
+            stockAux["stockDetails"] = stockDetails
+            stockAux["companyName"] = companyName
 
             __availableStocksSingleton.append(stockAux)
 
@@ -78,8 +83,9 @@ class Stock(object):
         if (len(self.AvailableStockCode) == 0):
             self.AvailableStockCode = self.GetAvailableStocks()
 
-        for stock in self.AvailableStockCode:
-            htmlPage = urllib.request.urlopen(self.MAIN_URL % stock[0])
+        for stock in self.AvailableStockCode:       
+            urllib.request.urlcleanup()
+            htmlPage = urllib.request.urlopen(self.MAIN_URL % stock["stockDetails"])
             stocksPage = BeautifulSoup(htmlPage.read(), features="html.parser")
 
             if stocksPage is None: return None
@@ -91,19 +97,30 @@ class Stock(object):
             ## START -- REGISTRATION INFO
             if (stocksTbl[0].contents is None) or (len(stocksTbl[0].contents) != 11): continue
        
-            ### PRICE
+            #### PRICE
             if (stocksTbl[0].contents[1].contents is None) or (len(stocksTbl[0].contents[1].contents) != 9): continue
             stockPrice = stocksTbl[0].contents[1].contents[7].get_text()
        
-            ### TYPE
+            #### TYPE
             if (stocksTbl[0].contents[3].contents is None) or (len(stocksTbl[0].contents[3].contents) != 9): continue
             stockType = stocksTbl[0].contents[3].contents[3].get_text()
 
+            #### PRIMARY SECTOR
+            if (stocksTbl[0].contents[7].contents is None) or (len(stocksTbl[0].contents[7].contents) != 9): continue
+            primarySector = stocksTbl[0].contents[7].contents[3].get_text()
+
+            #### SECONDARY SECTOR
+            if (stocksTbl[0].contents[9].contents is None) or (len(stocksTbl[0].contents[9].contents) != 9): continue
+            secondarySector = stocksTbl[0].contents[9].contents[3].get_text()
+
             ## END -- REGISTRATION INFO
 
-            ## POPULATING THE LIST
-            stockBasicInfoList["stockType"] = "ON" if str(stockType).upper().find("ON") > 0 else "PN"
+            ## POPULATING THE RESULT LIST
+            stockBasicInfoList["stock"] = stock["stockCode"]
+            stockBasicInfoList["stockType"] = "ON" if str(stockType).upper().find("ON") == 0 else "PN"
             stockBasicInfoList["stockPrice"] = Parser.ParseFloat(stockPrice)
+            stockBasicInfoList["primarySector"] = str(primarySector).rstrip(None).lstrip(None)
+            stockBasicInfoList["secondarySector"] = str(secondarySector).rstrip(None).lstrip(None)
 
             returnList.append(stockBasicInfoList)
 
