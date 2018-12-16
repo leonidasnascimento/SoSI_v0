@@ -1,12 +1,17 @@
 import sys
 import requests
 import urllib
+import time
+import threading
+import datetime
 
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
 
 from bs4 import BeautifulSoup
 from helpers.parser import Parser
+from datetime import datetime
+from dateutil import parser 
 
 #############################
 ##                         ##   
@@ -16,22 +21,38 @@ from helpers.parser import Parser
 class Stock(object):
     AvailableStockCode = None
     StocksBasicInfo = None
+    DividendsData = None
     
     ## CONSTANTS ##
     MAIN_URL = "http://www.fundamentus.com.br/%s"
+    DIVIDEND_URL = "http://www.fundamentus.com.br/proventos.php?papel=%s&tipo=2"
 
-    def __init__ (self):
-        self.AvailableStockCode = self.GetAvailableStocks()
-        print("BOVESPA available stocks successfully acquired!")
-        self.StocksBasicInfo = self.GetStocksBasicInfo()
-        print("BOVESPA offered amount by stock successfully acquired!")
+    def __init__ (self, stockTypeFilter: ""):
+        threads = []
+        tasks = [
+            self.GetDividendData,
+            # self.GetStocksBasicInfo
+        ]
 
-    def GetAvailableStocks(self):
+        self.AvailableStockCode = self.GetAvailableStocks(stockTypeFilter)
+
+        # Queueing tasks 
+        for task in tasks:
+            threads.append(threading.Thread(target=task))
+
+        # Executing tasks
+        for thread in threads:
+            thread.start()
+
+        # Waiting all threads to be completed
+        for thread in threads:
+            thread.join()
+
+    def GetAvailableStocks(self, stockTypeFilter):
         __availableStocksSingleton = None
 
         urlAux = self.MAIN_URL % "detalhes.php/"
-        htmlPage = urllib.request.urlopen(urlAux)
-        stocksPage = BeautifulSoup(htmlPage.read(), features="html.parser")
+        stocksPage = self.GetWebPage(urlAux)
 
         if stocksPage is None:
             return __availableStocksSingleton
@@ -67,6 +88,13 @@ class Stock(object):
             
             stockCode = str(det[0].get_text()).rstrip(None)
 
+            ### STOCK FILTERING
+            if stockTypeFilter != "":
+                if stockTypeFilter.lower() == "on":
+                    if (str(stockCode).find("3") < 0): continue
+                if stockTypeFilter.lower() == "pn":
+                    if (str(stockCode).find("4") < 0): continue
+            
             ## APPENDING ITEMS
             stockAux["stockCode"] = stockCode
             stockAux["stockDetails"] = stockDetails
@@ -77,16 +105,17 @@ class Stock(object):
         return __availableStocksSingleton
 
     def GetStocksBasicInfo(self):
-        returnList = []
+        self.StocksBasicInfo = []
         stockBasicInfoList = {}
+        counter = 0    
 
         if (len(self.AvailableStockCode) == 0):
             self.AvailableStockCode = self.GetAvailableStocks()
 
         for stock in self.AvailableStockCode:       
-            urllib.request.urlcleanup()
-            htmlPage = urllib.request.urlopen(self.MAIN_URL % stock["stockDetails"])
-            stocksPage = BeautifulSoup(htmlPage.read(), features="html.parser")
+            # self.PrintProgress(counter, len(self.AvailableStockCode))
+            
+            stocksPage = self.GetWebPage(self.MAIN_URL % stock["stockDetails"])
 
             if stocksPage is None: return None
 
@@ -94,26 +123,49 @@ class Stock(object):
 
             if (stocksTbl is None) or (len(stocksTbl) != 5): continue
 
-            ## START -- REGISTRATION INFO
-            if (stocksTbl[0].contents is None) or (len(stocksTbl[0].contents) != 11): continue
-       
-            #### PRICE
-            if (stocksTbl[0].contents[1].contents is None) or (len(stocksTbl[0].contents[1].contents) != 9): continue
-            stockPrice = stocksTbl[0].contents[1].contents[7].get_text()
-       
-            #### TYPE
-            if (stocksTbl[0].contents[3].contents is None) or (len(stocksTbl[0].contents[3].contents) != 9): continue
-            stockType = stocksTbl[0].contents[3].contents[3].get_text()
+            ## REGISTRATION INFO
+            if (stocksTbl[0].contents is not None) and (len(stocksTbl[0].contents) == 11):
+            
+                #### PRICE
+                if (stocksTbl[0].contents[1].contents is not None) and (len(stocksTbl[0].contents[1].contents) == 9):
+                    stockPrice = stocksTbl[0].contents[1].contents[7].get_text()
+        
+                #### TYPE
+                if (stocksTbl[0].contents[3].contents is not None) and (len(stocksTbl[0].contents[3].contents) == 9):
+                    stockType = stocksTbl[0].contents[3].contents[3].get_text()
 
-            #### PRIMARY SECTOR
-            if (stocksTbl[0].contents[7].contents is None) or (len(stocksTbl[0].contents[7].contents) != 9): continue
-            primarySector = stocksTbl[0].contents[7].contents[3].get_text()
+                #### PRIMARY SECTOR
+                if (stocksTbl[0].contents[7].contents is not None) and (len(stocksTbl[0].contents[7].contents) == 9):
+                    primarySector = stocksTbl[0].contents[7].contents[3].get_text()
 
-            #### SECONDARY SECTOR
-            if (stocksTbl[0].contents[9].contents is None) or (len(stocksTbl[0].contents[9].contents) != 9): continue
-            secondarySector = stocksTbl[0].contents[9].contents[3].get_text()
+                #### SECONDARY SECTOR
+                if (stocksTbl[0].contents[9].contents is not None) and (len(stocksTbl[0].contents[9].contents) == 9):
+                    secondarySector = stocksTbl[0].contents[9].contents[3].get_text()
 
-            ## END -- REGISTRATION INFO
+                #### AVG NEGOCIATION VOLUME
+                if (stocksTbl[0].contents[9].contents is not None) and (len(stocksTbl[0].contents[9].contents) == 9):
+                    avgNegociationValue = stocksTbl[0].contents[9].contents[7].get_text()
+
+            ## END - REGISTRATION INFO
+
+            ## MKT INFORMATION
+            if (stocksTbl[1].contents is not None) and (len(stocksTbl[1].contents) == 5):
+
+                #### MKT VALUE
+                if (stocksTbl[1].contents[1].contents is not None) and (len(stocksTbl[1].contents[1].contents) == 9):
+                    mktValue = stocksTbl[1].contents[1].contents[3].get_text()
+
+                #### STOCK AMOUNT
+                if (stocksTbl[1].contents[3].contents is not None) and (len(stocksTbl[1].contents[3].contents) == 9):
+                    stockAmount = stocksTbl[1].contents[3].contents[7].get_text()
+            
+            ## PROFIT
+            if (stocksTbl[4].contents is not None) and (len(stocksTbl[4].contents) == 11):
+                
+                #### NET PROFIT
+                if (stocksTbl[4].contents[9].contents is not None) and (len(stocksTbl[4].contents[9].contents) == 9):
+                    netProfit = stocksTbl[4].contents[9].contents[3].get_text()
+            ## END - MKT INFORMATION
 
             ## POPULATING THE RESULT LIST
             stockBasicInfoList["stock"] = stock["stockCode"]
@@ -121,9 +173,72 @@ class Stock(object):
             stockBasicInfoList["stockPrice"] = Parser.ParseFloat(stockPrice)
             stockBasicInfoList["primarySector"] = str(primarySector).rstrip(None).lstrip(None)
             stockBasicInfoList["secondarySector"] = str(secondarySector).rstrip(None).lstrip(None)
+            stockBasicInfoList["avgNegociationValue"] = Parser.ParseFloat(avgNegociationValue)
+            stockBasicInfoList["mktValue"] = Parser.ParseFloat(mktValue)
+            stockBasicInfoList["stockAmount"] = Parser.ParseFloat(stockAmount)
+            stockBasicInfoList["netProfit"] = Parser.ParseFloat(netProfit)
 
-            returnList.append(stockBasicInfoList)
+            self.StocksBasicInfo.append(stockBasicInfoList)
+            counter += 1
 
-        return returnList
+    def GetDividendData(self):
+        stocks = {}
+        self.DividendData = []
+        dividendRowCounter = -1
 
+        if(self.AvailableStockCode is None): return None
+        
+        for stock in self.AvailableStockCode:
+
+            stocksPage = self.GetWebPage(self.DIVIDEND_URL % "ITUB4")# stock["stockCode"])
+            if(stocksPage is None): continue
+        
+            stocksTbl = stocksPage.findChildren("table")
+            if (stocksTbl is None) or (len(stocksTbl) != 1): continue
+
+            dividendTbl = stocksTbl[0].contents 
+            if (dividendTbl is None) or (len(dividendTbl) != 5): continue
+
+            dividendRows = dividendTbl[3]
+            if (dividendTbl is None): continue
             
+            stocks["stockCode"] = stock["stockCode"]
+            stocks["dividends"] = []   
+
+            for row in dividendRows:                
+                dividendRowCounter += 1
+
+                if (dividendRowCounter % 2 == 0): continue
+                if len(row.contents) != 9: continue
+                if row.contents[5].get_text().lower().find("dividend") < 0: continue
+                
+                dateAux = datetime.strptime(row.contents[1].get_text(), "%d/%m/%Y").strftime("%Y-%m-%d")
+                # For performance reason, only two years are returned
+                if (datetime.today().year - datetime.strptime(dateAux, "%Y-%m-%d").year) > 2: break 
+                
+                dataAux = {}
+                dataAux["date"] = dateAux
+                dataAux["value"] = Parser.ParseFloat(row.contents[3].get_text())
+
+                stocks["dividends"].append(dateAux)    
+
+            self.DividendData.append(stocks)
+            break
+
+    def GetWebPage(self, url):
+        success = False
+    
+        while(not success):
+            try:
+                urllib.request.urlcleanup()
+                htmlPage = urllib.request.urlopen(url)
+                stocksPage = BeautifulSoup(htmlPage.read(), features="html.parser")
+                success = True
+            except Exception:
+                time.sleep(5)    
+                continue
+
+        return stocksPage
+    
+    def PrintProgress(self, actual, target):
+        print(float((actual/target)*100).__round__(2))

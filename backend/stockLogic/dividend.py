@@ -99,7 +99,7 @@ def Save(lstDividend):
             return False
     return True
 
-stockObj = Stock() 
+stockObj = Stock("ON") 
 gStockTotalAmountObj = None
 stocks = requests.request("GET", SERVICE_ENDPOINT).json()
 filteredStocks = FilterStocks(stocks, STOCK_TYPE_TO_FILTER)
