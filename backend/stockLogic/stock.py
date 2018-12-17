@@ -1,6 +1,6 @@
 import sys
 import requests
-import urllib
+import urllib3
 import time
 import threading
 
@@ -193,11 +193,14 @@ class Stock(object):
         stocks = {}
         self.DividendData = []
         dividendRowCounter = -1
+        dividendRowRead = 0
 
         if(self.AvailableStockCode is None):
             return None
 
         for stock in self.AvailableStockCode:
+            dividendRowCounter = -1
+            dividendRowRead = 0
 
             stocksPage = self.GetWebPage(
                 self.DIVIDEND_URL % stock["stockCode"])
@@ -216,43 +219,38 @@ class Stock(object):
             if (dividendTbl is None):
                 continue
 
+            stocks = {}    
             stocks["stockCode"] = stock["stockCode"]
             stocks["dividends"] = []
 
             for row in dividendRows:
                 dividendRowCounter += 1
 
-                if (dividendRowCounter % 2 == 0):
-                    continue
-                if len(row.contents) != 9:
-                    continue
-                if row.contents[5].get_text().lower().find("dividend") < 0:
-                    continue
+                if (dividendRowRead == 20): break
+                if (dividendRowCounter % 2 == 0): continue
+                if len(row.contents) != 9: continue
+                if row.contents[5].get_text().lower().find("dividend") < 0: continue
+                
+                dividendRowRead += 1
+                dateAux = datetime.strptime(row.contents[1].get_text(), "%d/%m/%Y").strftime("%Y-%m-%d")
 
-                dateAux = datetime.strptime(
-                    row.contents[1].get_text(), "%d/%m/%Y").strftime("%Y-%m-%d")
-                # For performance reason, only two years are returned
-                if (datetime.today().year - datetime.strptime(dateAux, "%Y-%m-%d").year) > 2:
-                    break
-
-                stocks["dividends"].append(
-                    {"date": dateAux, "dividend": Parser.ParseFloat(row.contents[3].get_text())})
+                stocks["dividends"].append({"date": dateAux, "dividend": Parser.ParseFloat(row.contents[3].get_text())})
 
             self.DividendData.append(stocks)
-            break
 
     def GetWebPage(self, url):
         success = False
 
         while(not success):
             try:
-                urllib.request.urlcleanup()
-                htmlPage = urllib.request.urlopen(url)
+                htmlPool = urllib3.connection_from_url(url)
+                htmlPage = htmlPool.urlopen("GET", url)
                 stocksPage = BeautifulSoup(
-                    htmlPage.read(), features="html.parser")
+                    htmlPage.data, features="html.parser")
                 success = True
-            except Exception:
-                time.sleep(5)
+            except Exception as e:
+                print(e.value)
+                time.sleep(1)
                 continue
 
         return stocksPage

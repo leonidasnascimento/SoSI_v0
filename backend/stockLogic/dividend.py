@@ -15,7 +15,6 @@ from helpers.parser import Parser
 from database.dividendDbCommand import DividendDbCommand
 
 ### GLOBAL CONSTANTS ###
-SERVICE_ENDPOINT = "https://www.bussoladoinvestidor.com.br/nb/api/v1/stocks"
 STOCK_TYPE_TO_FILTER = "ON"  # Leave it empty for all types
 
 ### GLOBAL VARIABLES ###
@@ -27,9 +26,6 @@ FIELD_RESULTS = "results"
 FIELD_TYPE = "type"
 
 # METHODS #
-def FilterStocks(stocks, type):
-    return [s for s in stocks[FIELD_RESULTS] if s[FIELD_TYPE] == type]
-
 def GetAvg21Negociation(stock_code):
     url = "https://www.infomoney.com.br/webservices/services.asmx/GetHistoryQuotesDataTable"
 
@@ -99,11 +95,9 @@ def Save(lstDividend):
             return False
     return True
 
-stockObj = Stock("ON") 
+stockObj = Stock(STOCK_TYPE_TO_FILTER) 
 gStockTotalAmountObj = None
-stocks = requests.request("GET", SERVICE_ENDPOINT).json()
-filteredStocks = FilterStocks(stocks, STOCK_TYPE_TO_FILTER)
-divdendObj = GetDividendModel(filteredStocks)
+divdendObj = GetDividendModel(stockObj)
 
 if Save(divdendObj) == False:
     raise SystemError()
