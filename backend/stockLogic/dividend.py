@@ -77,17 +77,17 @@ def GetDividendModel(stockObj):
         dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector")
         dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector")
         dividendModelAux.Equity = Parser.ParseFloat("")
-        dividendModelAux.Avg21Negociation = GetAvg21Negociation(stock["code"])
+        dividendModelAux.Avg21Negociation = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "avgNegociationValue"))
         dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
         dividendModelAux.AvgPayout12Months = Parser.ParseFloat("")
-        dividendModelAux.DividendLastPrice = Parser.ParseFloat("")
+        dividendModelAux.DividendLastPrice = Parser.ParseFloat(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1))
         dividendModelAux.DividendPeriod = 0
         dividendModelAux.DividendTotalValueShared = Parser.ParseFloat("")
-        dividendModelAux.DividendYeld = Parser.ParseFloat("")
         dividendModelAux.MajorShareholder = ""
-        dividendModelAux.NetProfit = Parser.ParseFloat(stock["profit"])
-        dividendModelAux.Valuation = Parser.ParseFloat("")
-        dividendModelAux.StockAvailableAmount = 0
+        dividendModelAux.NetProfit = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "netProfit"))
+        dividendModelAux.Valuation = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "mktValue"))
+        dividendModelAux.StockAvailableAmount = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "stockAmount"))
+        dividendModelAux.DividendYeld = dividendModelAux.DividendLastPrice / dividendModelAux.StockPrice
         returnObj.append(dividendModelAux)
     return returnObj
 
@@ -100,7 +100,19 @@ def GetBasicInfo(lstToDigInto, stockCode, fieldToGet):
     if lstReturn is None or len(lstReturn) == 0: return ""
 
     return lstReturn[0] 
+
+def GetDividendValue(lstToDigInto, stockCode, order: 1):
+    if lstToDigInto is None: return ""
     
+    lstDividend = []
+    lstDividend = [ x["dividends"] for x in lstToDigInto if x["stock"] == stockCode ]
+
+    if lstDividend is None or len(lstDividend) == 0: return ""
+
+    if order == 1: 
+        return lstDividend.sort("date", True)[0]
+    else:
+        return lstDividend.sort("date")[0]
 
 def Save(lstDividend):
     for dividend in lstDividend:

@@ -232,7 +232,8 @@ class Stock(object):
                 if row.contents[5].get_text().lower().find("dividend") < 0: continue
                 
                 dividendRowRead += 1
-                dateAux = datetime.strptime(row.contents[1].get_text(), "%d/%m/%Y").strftime("%Y-%m-%d")
+                dateAux = row.contents[1].get_text()
+                # dateAux = datetime.strptime(row.contents[1].get_text(), "%d/%m/%Y").strftime("%Y-%m-%d")
 
                 stocks["dividends"].append({"date": dateAux, "dividend": Parser.ParseFloat(row.contents[3].get_text())})
 
