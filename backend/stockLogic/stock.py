@@ -191,7 +191,7 @@ class Stock(object):
 
     def GetDividendData(self):
         stocks = {}
-        self.DividendData = []
+        self.DividendsData = []
         dividendRowCounter = -1
         dividendRowRead = 0
 
@@ -236,7 +236,7 @@ class Stock(object):
 
                 stocks["dividends"].append({"date": dateAux, "dividend": Parser.ParseFloat(row.contents[3].get_text())})
 
-            self.DividendData.append(stocks)
+            self.DividendsData.append(stocks)
 
     def GetWebPage(self, url):
         success = False

@@ -64,17 +64,19 @@ def GetAvg21Negociation(stock_code):
 
     return result/divCount
 
-def GetDividendModel(stocks):
+def GetDividendModel(stockObj):
+    if stockObj is None: return
+    
     returnObj = []
-    for stock in stocks:
+    for stock in stockObj.AvailableStockCode:
         dividendModelAux = DividendModel()
-        dividendModelAux.Code = stock["code"]
-        dividendModelAux.Company = stock["name"]
-        dividendModelAux.Type = stock[FIELD_TYPE]
-        dividendModelAux.StockPrice = Parser.ParseFloat(stock["price"])
-        dividendModelAux.Sector = stock["sector"]
-        dividendModelAux.SecondSector = ""
-        dividendModelAux.Equity = Parser.ParseFloat(stock["equity"])
+        dividendModelAux.Code = stock["stockCode"]
+        dividendModelAux.Company = stock["companyName"]
+        dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType")
+        dividendModelAux.StockPrice = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice"))
+        dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector")
+        dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector")
+        dividendModelAux.Equity = Parser.ParseFloat("")
         dividendModelAux.Avg21Negociation = GetAvg21Negociation(stock["code"])
         dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
         dividendModelAux.AvgPayout12Months = Parser.ParseFloat("")
@@ -89,17 +91,27 @@ def GetDividendModel(stocks):
         returnObj.append(dividendModelAux)
     return returnObj
 
+def GetBasicInfo(lstToDigInto, stockCode, fieldToGet):
+    if lstToDigInto is None: return ""
+    
+    lstReturn = []
+    lstReturn = [ x[fieldToGet] for x in lstToDigInto if x["stock"] == stockCode ]
+
+    if lstReturn is None or len(lstReturn) == 0: return ""
+
+    return lstReturn[0] 
+    
+
 def Save(lstDividend):
     for dividend in lstDividend:
         if DividendDbCommand().Save(dividend) == False:
             return False
     return True
 
-stockObj = Stock(STOCK_TYPE_TO_FILTER) 
-gStockTotalAmountObj = None
-divdendObj = GetDividendModel(stockObj)
+stockObj = Stock(STOCK_TYPE_TO_FILTER)
+lstDividend = GetDividendModel(stockObj)
 
-if Save(divdendObj) == False:
+if (lstDividend is None) or (Save(lstDividend)) == False:
     raise SystemError()
 
 print("DONE!!!")
