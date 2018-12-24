@@ -129,7 +129,7 @@ class Stock(object):
         # REGISTRATION INFO
         if (stocksTbl[0].contents is not None) and (len(stocksTbl[0].contents) == 11):
 
-                # PRICE
+            # PRICE
             if (stocksTbl[0].contents[1].contents is not None) and (len(stocksTbl[0].contents[1].contents) == 9):
                 stockPrice = stocksTbl[0].contents[1].contents[7].get_text()
 
@@ -172,6 +172,22 @@ class Stock(object):
                 netProfit = stocksTbl[4].contents[9].contents[3].get_text()
         # END - MKT INFORMATION
 
+        # BALANCE SHEET
+        if (stocksTbl[3].contents != None) and (len(stocksTbl[3].contents) == 9):
+
+            # EQUITY
+            if (stocksTbl[3].contents[7].contents != None) and (len(stocksTbl[3].contents[7].contents) == 9):
+                equity = stocksTbl[3].contents[7].contents[7].get_text()
+        # END - BALANCE SHEET
+
+        # DIVIDENDS
+        if (stocksTbl[2].contents != None) and (len(stocksTbl[2].contents) == 25):
+
+            # DIVIDEND YELD
+            if (stocksTbl[2].contents[17] != None) and (len(stocksTbl[2].contents[17]) == 13):            
+                dividendYeld = stocksTbl[2].contents[17].contents[7].get_text()
+        # END - DIVIDENDS
+
         # POPULATING THE RESULT LIST
         stockBasicInfoList["stock"] = stockCode
         stockBasicInfoList["stockType"] = "ON" if str(
@@ -186,6 +202,8 @@ class Stock(object):
         stockBasicInfoList["mktValue"] = Parser.ParseFloat(mktValue)
         stockBasicInfoList["stockAmount"] = Parser.ParseFloat(stockAmount)
         stockBasicInfoList["netProfit"] = Parser.ParseFloat(netProfit)
+        stockBasicInfoList["equity"] = Parser.ParseFloat(equity)
+        stockBasicInfoList["dividendYeld"] = Parser.ParseFloat(dividendYeld)
 
         self.StocksBasicInfo.append(stockBasicInfoList)
 

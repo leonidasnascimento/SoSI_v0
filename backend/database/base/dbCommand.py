@@ -16,7 +16,7 @@ class DbCommand:
                 
                 return True
         except Error as e:
-            print(e)
+            print(e + ' - ' + strCommand)
             pass
         finally:
             cursor.close()

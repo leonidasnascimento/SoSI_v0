@@ -12,6 +12,10 @@ class Parser:
 
         if str(valStr).find(',') > 0:
             valStr = str(valStr).replace(',', '.')
+
+        # PERCENT
+        if str(valStr).find('%') > 0:
+            return float(str(valStr).replace('%',''))/100
         
         return float(valStr)
 

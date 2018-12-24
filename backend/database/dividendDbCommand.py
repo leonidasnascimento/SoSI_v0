@@ -10,7 +10,6 @@ class DividendDbCommand:
         if obj is None:
             raise Exception 
 
-
         args = (obj.Code, obj.Company, obj.Sector, obj.SecondSector, 
             obj.StockPrice, obj.Type, obj.Valuation, obj.StockAvailableAmount, obj.Avg21Negociation, 
             obj.DividendPeriod, obj.DividendLastPrice, obj.DividendTotalValueShared, 

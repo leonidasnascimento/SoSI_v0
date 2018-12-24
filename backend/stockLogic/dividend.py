@@ -73,21 +73,22 @@ def GetDividendModel(stockObj):
         dividendModelAux.Code = stock["stockCode"]
         dividendModelAux.Company = stock["companyName"]
         dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType")
-        dividendModelAux.StockPrice = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice"))
+        dividendModelAux.StockPrice = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice")
         dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector")
         dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector")
-        dividendModelAux.Equity = Parser.ParseFloat("")
-        dividendModelAux.Avg21Negociation = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "avgNegociationValue"))
-        dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
-        dividendModelAux.AvgPayout12Months = Parser.ParseFloat("")
-        dividendModelAux.DividendLastPrice = Parser.ParseFloat(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1))
+        dividendModelAux.Equity = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity")
+        dividendModelAux.Avg21Negociation = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "avgNegociationValue")
+        dividendModelAux.DividendLastPrice = 0 # GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1)
         dividendModelAux.DividendPeriod = 0
-        dividendModelAux.DividendTotalValueShared = Parser.ParseFloat("")
+        dividendModelAux.DividendYeld = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld")
+        dividendModelAux.NetProfit = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit")
+        dividendModelAux.StockAvailableAmount = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount")
+        dividendModelAux.AvgPayout12Months = round((((dividendModelAux.DividendYeld * dividendModelAux.StockPrice) * dividendModelAux.StockAvailableAmount) / dividendModelAux.NetProfit), 4)
+        dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
+        dividendModelAux.DividendTotalValueShared = dividendModelAux.AvgPayout12Months * dividendModelAux.NetProfit
         dividendModelAux.MajorShareholder = ""
-        dividendModelAux.NetProfit = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "netProfit"))
-        dividendModelAux.Valuation = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "mktValue"))
-        dividendModelAux.StockAvailableAmount = Parser.ParseFloat(GetBasicInfo(stockObj.stockCode, stock["stockCode"], "stockAmount"))
-        dividendModelAux.DividendYeld = dividendModelAux.DividendLastPrice / dividendModelAux.StockPrice
+        dividendModelAux.Valuation = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue")
+        
         returnObj.append(dividendModelAux)
     return returnObj
 
@@ -119,6 +120,10 @@ def Save(lstDividend):
         if DividendDbCommand().Save(dividend) == False:
             return False
     return True
+
+#########
+## INI ##
+#########
 
 stockObj = Stock(STOCK_TYPE_TO_FILTER)
 lstDividend = GetDividendModel(stockObj)
