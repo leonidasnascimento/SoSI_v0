@@ -262,15 +262,17 @@ class Stock(object):
 
         while(not success):
             try:
-                htmlPool = urllib3.connection_from_url(url)
-                htmlPage = htmlPool.urlopen("GET", url)
-                stocksPage = BeautifulSoup(
-                    htmlPage.data, features="html.parser")
+                headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+                htmlPage = requests.get(url, headers=headers)
+                htmlData = htmlPage.content
+                stocksPage = BeautifulSoup(htmlData, "html.parser")
                 success = True
             except Exception as e:
-                print(e.value)
+                print(e)
                 time.sleep(1)
                 continue
+            finally:
+                htmlPage.close()
 
         return stocksPage
 
