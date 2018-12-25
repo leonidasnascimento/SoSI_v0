@@ -8,7 +8,8 @@ import urllib
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
 
-from stock import Stock
+from crawlers.stockCrawler import StockCrawler
+from crawlers.companyInfoCrawler import CompanyInfoCrawler
 from bs4 import BeautifulSoup
 from models.dividendModel import DividendModel
 from helpers.parser import Parser
@@ -32,6 +33,8 @@ def GetDividendModel(stockObj):
     returnObj = []
     for stock in stockObj.AvailableStockCode:
         dividendModelAux = DividendModel()
+        companyInfo = CompanyInfoCrawler(stock["stockCode"])
+
         dividendModelAux.Code = stock["stockCode"]
         dividendModelAux.Company = stock["companyName"]
         dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType")
@@ -48,9 +51,11 @@ def GetDividendModel(stockObj):
         dividendModelAux.AvgPayout12Months = (((dividendModelAux.DividendYeld * dividendModelAux.StockPrice) * dividendModelAux.StockAvailableAmount) / dividendModelAux.NetProfit)
         dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
         dividendModelAux.DividendTotalValueShared = dividendModelAux.AvgPayout12Months * dividendModelAux.NetProfit
-        dividendModelAux.MajorShareholder = ""
+        dividendModelAux.MajorShareholder = companyInfo.MajorShareholder
         dividendModelAux.Valuation = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue")
         
+        companyInfo = None
+
         returnObj.append(dividendModelAux)
     return returnObj
 
@@ -91,7 +96,7 @@ def Save(lstDividend):
 ## INI ##
 #########
 
-stockObj = Stock(STOCK_TYPE_TO_FILTER)
+stockObj = StockCrawler(STOCK_TYPE_TO_FILTER)
 lstDividend = GetDividendModel(stockObj)
 
 if (lstDividend is None) or (Save(lstDividend)) == False:

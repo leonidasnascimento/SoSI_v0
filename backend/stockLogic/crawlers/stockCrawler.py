@@ -1,6 +1,4 @@
 import sys
-import requests
-import urllib3
 import time
 import threading
 
@@ -10,7 +8,7 @@ sys.path.append("\\git\\SoSI\\backend")
 from dateutil import parser
 from datetime import datetime
 from helpers.parser import Parser
-from bs4 import BeautifulSoup
+from helpers.web import Web
 
 
 #############################
@@ -20,7 +18,7 @@ from bs4 import BeautifulSoup
 #############################
 
 
-class Stock(object):
+class StockCrawler(object):
     AvailableStockCode = None
     StocksBasicInfo = None
     DividendsData = None
@@ -48,7 +46,7 @@ class Stock(object):
         __availableStocksSingleton = None
 
         urlAux = self.MAIN_URL % "detalhes.php/"
-        stocksPage = self.GetWebPage(urlAux)
+        stocksPage = Web.GetWebPage(urlAux)
 
         if stocksPage is None:
             return __availableStocksSingleton
@@ -102,8 +100,8 @@ class Stock(object):
 
             __availableStocksSingleton.append(stockAux)
 
-        # return __availableStocksSingleton
-        return [x for x in __availableStocksSingleton if (x["stockCode"] == "ITUB3" or x["stockCode"] == "BBDC3" or x["stockCode"] == "CSAN3")]
+        return __availableStocksSingleton
+        # return [x for x in __availableStocksSingleton if (x["stockCode"] == "ITUB3" or x["stockCode"] == "BBDC3" or x["stockCode"] == "CSAN3")]
 
     def GetStocksBasicInfo(self):
         self.StocksBasicInfo = []
@@ -120,7 +118,7 @@ class Stock(object):
 
     def GetStocksBasicInfoThreading(self, stockCode, stockDetailsPage):
         stockBasicInfoList = {}
-        stocksPage = self.GetWebPage(self.MAIN_URL % stockDetailsPage)
+        stocksPage = Web.GetWebPage(self.MAIN_URL % stockDetailsPage)
         if stocksPage is None: return
         
         stocksTbl = stocksPage.findChildren("table")
@@ -220,7 +218,7 @@ class Stock(object):
             dividendRowCounter = -1
             dividendRowRead = 0
 
-            stocksPage = self.GetWebPage(
+            stocksPage = Web.GetWebPage(
                 self.DIVIDEND_URL % stock["stockCode"])
             if(stocksPage is None):
                 continue
@@ -256,25 +254,6 @@ class Stock(object):
                 stocks["dividends"].append({"date": dateAux, "dividend": Parser.ParseFloat(row.contents[3].get_text())})
 
             self.DividendsData.append(stocks)
-
-    def GetWebPage(self, url):
-        success = False
-
-        while(not success):
-            try:
-                headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-                htmlPage = requests.get(url, headers=headers)
-                htmlData = htmlPage.content
-                stocksPage = BeautifulSoup(htmlData, "html.parser")
-                success = True
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                continue
-            finally:
-                htmlPage.close()
-
-        return stocksPage
 
     def PrintProgress(self, actual, target):
         print(float((actual/target)*100).__round__(2))
