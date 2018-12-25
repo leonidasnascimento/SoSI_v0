@@ -40,7 +40,7 @@ def GetDividendModel(stockObj):
         dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector")
         dividendModelAux.Equity = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity")
         dividendModelAux.Avg21Negociation = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "avgNegociationValue")
-        dividendModelAux.DividendLastPrice = 0 # GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1)
+        dividendModelAux.DividendLastPrice = GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1)
         dividendModelAux.DividendPeriod = 0
         dividendModelAux.DividendYeld = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld")
         dividendModelAux.NetProfit = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit")
@@ -68,14 +68,18 @@ def GetDividendValue(lstToDigInto, stockCode, order: 1):
     if lstToDigInto is None: return ""
     
     lstDividend = []
-    lstDividend = [ x["dividends"] for x in lstToDigInto if x["stock"] == stockCode ]
+    lstDividend = [ x["dividends"] for x in lstToDigInto if x["stockCode"] == stockCode ]
+    dividendPrice = ""
 
     if lstDividend is None or len(lstDividend) == 0: return ""
+    if lstDividend[0] is None or len(lstDividend[0]) == 0: return ""
 
     if order == 1: 
-        return lstDividend.sort("date", True)[0]
+        dividendPrice = lstDividend[0][0]['dividend']
     else:
-        return lstDividend.sort("date")[0]
+        dividendPrice = lstDividend[0][len(lstDividend[0]) - 1]['dividend']
+
+    return dividendPrice
 
 def Save(lstDividend):
     for dividend in lstDividend:
