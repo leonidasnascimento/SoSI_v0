@@ -112,9 +112,10 @@ class StockCrawler(object):
 
         # Queueing the tasks
         for stock in self.AvailableStockCode:
-            threads.append(threading.Thread(target=self.GetStocksBasicInfoThreading, args=(stock["stockCode"], stock["stockDetails"],)))
+            self.GetStocksBasicInfoThreading(stock["stockCode"], stock["stockDetails"])
+            # threads.append(threading.Thread(target=self.GetStocksBasicInfoThreading, args=(stock["stockCode"], stock["stockDetails"],)))
 
-        self.ExecuteThread(threads)
+        # self.ExecuteThread(threads)
 
     def GetStocksBasicInfoThreading(self, stockCode, stockDetailsPage):
         stockBasicInfoList = {}

@@ -37,29 +37,34 @@ def GetDividendModel(stockObj):
 
         dividendModelAux.Code = stock["stockCode"]
         dividendModelAux.Company = stock["companyName"]
-        dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType")
-        dividendModelAux.StockPrice = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice")
-        dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector")
-        dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector")
-        dividendModelAux.Equity = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity")
-        dividendModelAux.Avg21Negociation = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "avgNegociationValue")
-        dividendModelAux.DividendLastPrice = GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1)
+        dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "ND")
+        dividendModelAux.StockPrice = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
+        dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
+        dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
+        dividendModelAux.Equity = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity", 0.00))
+        dividendModelAux.Avg21Negociation = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "avgNegociationValue", 0.00))
+        dividendModelAux.DividendLastPrice = Parser.ParseFloat(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
         dividendModelAux.DividendPeriod = 0
-        dividendModelAux.DividendYeld = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld")
-        dividendModelAux.NetProfit = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit")
-        dividendModelAux.StockAvailableAmount = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount")
-        dividendModelAux.AvgPayout12Months = (((dividendModelAux.DividendYeld * dividendModelAux.StockPrice) * dividendModelAux.StockAvailableAmount) / dividendModelAux.NetProfit)
+        dividendModelAux.DividendYeld = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld", 0.00))
+        dividendModelAux.NetProfit = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
+        dividendModelAux.StockAvailableAmount = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
+
+        if dividendModelAux.NetProfit > 0:
+            dividendModelAux.AvgPayout12Months = (((dividendModelAux.DividendYeld * dividendModelAux.StockPrice) * dividendModelAux.StockAvailableAmount) / dividendModelAux.NetProfit)
+        else:
+            dividendModelAux.AvgPayout12Months = 0.00
+        
         dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
         dividendModelAux.DividendTotalValueShared = dividendModelAux.AvgPayout12Months * dividendModelAux.NetProfit
         dividendModelAux.MajorShareholder = companyInfo.MajorShareholder
-        dividendModelAux.Valuation = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue")
+        dividendModelAux.Valuation = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
         
         companyInfo = None
 
         returnObj.append(dividendModelAux)
     return returnObj
 
-def GetBasicInfo(lstToDigInto, stockCode, fieldToGet):
+def GetBasicInfo(lstToDigInto, stockCode, fieldToGet, defaultValue):
     if lstToDigInto is None: return ""
     
     lstReturn = []
@@ -67,9 +72,9 @@ def GetBasicInfo(lstToDigInto, stockCode, fieldToGet):
 
     if lstReturn is None or len(lstReturn) == 0: return ""
 
-    return lstReturn[0] 
+    return lstReturn[0] if lstReturn[0] != "" else defaultValue 
 
-def GetDividendValue(lstToDigInto, stockCode, order: 1):
+def GetDividendValue(lstToDigInto, stockCode, order: 1, defaultValue):
     if lstToDigInto is None: return ""
     
     lstDividend = []
@@ -84,7 +89,7 @@ def GetDividendValue(lstToDigInto, stockCode, order: 1):
     else:
         dividendPrice = lstDividend[0][len(lstDividend[0]) - 1]['dividend']
 
-    return dividendPrice
+    return dividendPrice if dividendPrice != "" else defaultValue
 
 def Save(lstDividend):
     for dividend in lstDividend:
