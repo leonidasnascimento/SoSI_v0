@@ -69,24 +69,24 @@ def GetDividendModel(stockObj):
     return returnObj
 
 def GetBasicInfo(lstToDigInto, stockCode, fieldToGet, defaultValue):
-    if lstToDigInto is None: return ""
+    if lstToDigInto is None: return defaultValue
     
     lstReturn = []
     lstReturn = [ x[fieldToGet] for x in lstToDigInto if x["stock"] == stockCode ]
 
-    if lstReturn is None or len(lstReturn) == 0: return ""
+    if lstReturn is None or len(lstReturn) == 0: return defaultValue
 
-    return lstReturn[0] if lstReturn[0] != "" else defaultValue 
+    return lstReturn[0] if str(lstReturn[0]) != "" or str(lstReturn[0]) != '' else defaultValue 
 
 def GetDividendValue(lstToDigInto, stockCode, order: 1, defaultValue):
-    if lstToDigInto is None: return ""
+    if lstToDigInto is None: return defaultValue
     
     lstDividend = []
     lstDividend = [ x["dividends"] for x in lstToDigInto if x["stockCode"] == stockCode ]
-    dividendPrice = ""
+    dividendPrice = defaultValue
 
-    if lstDividend is None or len(lstDividend) == 0: return ""
-    if lstDividend[0] is None or len(lstDividend[0]) == 0: return ""
+    if lstDividend is None or len(lstDividend) == 0: return defaultValue
+    if lstDividend[0] is None or len(lstDividend[0]) == 0: return defaultValue
 
     if order == 1: 
         dividendPrice = lstDividend[0][0]['dividend']
