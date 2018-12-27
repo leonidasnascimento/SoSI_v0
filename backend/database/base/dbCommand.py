@@ -13,15 +13,12 @@ class DbCommand:
                 rowsAffected = cursor.execute(strCommand)
                 
                 conn.commit()
-                
-                return True
         except Error as e:
             print(e + ' - ' + strCommand)
-            pass
         finally:
             cursor.close()
             conn.close()
-            pass
+            return True
 
     def CallProcedure(self, strCommand, args):
         try:

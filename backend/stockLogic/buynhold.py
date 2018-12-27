@@ -49,6 +49,9 @@ def GetDividendModel(stockObj):
         dividendModelAux.NetProfit = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
         dividendModelAux.StockAvailableAmount = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
 
+        # How To:
+        #   https://pt.wikihow.com/Calcular-a-Taxa-de-Distribui%C3%A7%C3%A3o-de-Dividendos
+        #
         if dividendModelAux.NetProfit > 0:
             dividendModelAux.AvgPayout12Months = (((dividendModelAux.DividendYeld * dividendModelAux.StockPrice) * dividendModelAux.StockAvailableAmount) / dividendModelAux.NetProfit)
         else:
