@@ -34,26 +34,27 @@ def GetDividendModel(stockObj):
     for stock in stockObj.AvailableStockCode:
         dividendModelAux = DividendModel()
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
+        lpaAux = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "lpa", 0.00)
 
         dividendModelAux.Code = stock["stockCode"]
         dividendModelAux.Company = stock["companyName"]
         dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "ND")
-        dividendModelAux.StockPrice = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
+        dividendModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
         dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
         dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
-        dividendModelAux.Equity = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity", 0.00))
-        dividendModelAux.Avg21Negociation = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "avgNegociationValue", 0.00))
-        dividendModelAux.DividendLastPrice = Parser.ParseFloat(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
+        dividendModelAux.Equity = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity", 0.00))
+        dividendModelAux.Avg21Negociation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "avgNegociationValue", 0.00))
+        dividendModelAux.DividendLastPrice = float(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
         dividendModelAux.DividendPeriod = 0
-        dividendModelAux.DividendYeld = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld", 0.00))
-        dividendModelAux.NetProfit = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
-        dividendModelAux.StockAvailableAmount = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
+        dividendModelAux.DividendYeld = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld", 0.00))
+        dividendModelAux.NetProfit = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
+        dividendModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
 
         # How To:
         #   https://pt.wikihow.com/Calcular-a-Taxa-de-Distribui%C3%A7%C3%A3o-de-Dividendos
         #
-        if dividendModelAux.NetProfit > 0:
-            dividendModelAux.AvgPayout12Months = (((dividendModelAux.DividendYeld * dividendModelAux.StockPrice) * dividendModelAux.StockAvailableAmount) / dividendModelAux.NetProfit)
+        if lpaAux > 0:
+            dividendModelAux.AvgPayout12Months = (dividendModelAux.DividendYeld * dividendModelAux.StockPrice)/lpaAux 
         else:
             dividendModelAux.AvgPayout12Months = 0.00
         

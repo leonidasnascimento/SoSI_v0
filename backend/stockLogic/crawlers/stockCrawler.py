@@ -185,6 +185,15 @@ class StockCrawler(object):
             # DIVIDEND YELD
             if (stocksTbl[2].contents[17] != None) and (len(stocksTbl[2].contents[17]) == 13):            
                 dividendYeld = stocksTbl[2].contents[17].contents[7].get_text()
+
+        # LPA
+        spanList = stocksPage.find_all('span', {'class' :'txt'})
+        
+        if not (spanList is None):
+            lpaLabel = [l for l in spanList if str(l.text).lower() == "lpa"]
+            if (not (lpaLabel is None)) or (len(lpaLabel) > 0):
+                lpa = lpaLabel[0].parent.findNext('td').contents[0].get_text()
+
         # END - DIVIDENDS
 
         # POPULATING THE RESULT LIST
@@ -203,6 +212,7 @@ class StockCrawler(object):
         stockBasicInfoList["netProfit"] = Parser.ParseFloat(netProfit)
         stockBasicInfoList["equity"] = Parser.ParseFloat(equity)
         stockBasicInfoList["dividendYeld"] = Parser.ParseFloat(dividendYeld)
+        stockBasicInfoList["lpa"] = Parser.ParseFloat(lpa)
 
         self.StocksBasicInfo.append(stockBasicInfoList)
 
