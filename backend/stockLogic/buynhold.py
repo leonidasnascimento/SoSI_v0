@@ -1,16 +1,11 @@
-import urllib
-import json
 import pprint
 import sys
-import requests
-import urllib
 
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
 
 from crawlers.stockCrawler import StockCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
-from bs4 import BeautifulSoup
 from models.dividendModel import DividendModel
 from helpers.parser import Parser
 from database.dividendDbCommand import DividendDbCommand
@@ -38,7 +33,7 @@ def GetDividendModel(stockObj):
 
         dividendModelAux.Code = stock["stockCode"]
         dividendModelAux.Company = stock["companyName"]
-        dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "ND")
+        dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "N/D")
         dividendModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
         dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
         dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
@@ -50,6 +45,7 @@ def GetDividendModel(stockObj):
         dividendModelAux.NetProfit = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
         dividendModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
 
+        # 
         # How To:
         #   https://pt.wikihow.com/Calcular-a-Taxa-de-Distribui%C3%A7%C3%A3o-de-Dividendos
         #
@@ -58,10 +54,10 @@ def GetDividendModel(stockObj):
         else:
             dividendModelAux.AvgPayout12Months = 0.00
         
-        dividendModelAux.AvgPayout5Years = Parser.ParseFloat("")
+        dividendModelAux.AvgPayout5Years = 0.00
         dividendModelAux.DividendTotalValueShared = dividendModelAux.AvgPayout12Months * dividendModelAux.NetProfit
         dividendModelAux.MajorShareholder = companyInfo.MajorShareholder
-        dividendModelAux.Valuation = Parser.ParseFloat(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
+        dividendModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
         
         companyInfo = None
 
