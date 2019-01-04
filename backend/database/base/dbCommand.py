@@ -2,12 +2,18 @@ import mysql.connector
 from mysql.connector import Error
 
 class DbCommand:
+    
+    config = {
+        'user': 'sosi',
+        'password': 'sosidb',
+        'host': '127.0.0.1',
+        'database': 'sys',
+        'raise_on_warnings': True
+    }
+
     def Commit(self, strCommand):
         try:
-            conn = mysql.connector.connect(host='127.0.0.1',
-                                       database='sys',
-                                       user='sosi',
-                                       password='sosidb')
+            conn = mysql.connector.connect(**self.config)
             if conn.is_connected():
                 cursor = conn.cursor()
                 rowsAffected = cursor.execute(strCommand)
@@ -22,10 +28,7 @@ class DbCommand:
 
     def CallProcedure(self, strCommand, args):
         try:
-            conn = mysql.connector.connect(host='127.0.0.1',
-                                       database='sys',
-                                       user='sosi',
-                                       password='sosidb')
+            conn = mysql.connector.connect(**self.config)
             
             if conn.is_connected():
                 cursor = conn.cursor()
@@ -41,14 +44,11 @@ class DbCommand:
             conn.close()
             pass    
 
-
     def Query(self, strCommand):
         try:
             returnObj = tuple
-            conn = mysql.connector.connect(host='127.0.0.1',
-                                       database='sys',
-                                       user='sosi',
-                                       password='sosidb')
+            conn = mysql.connector.connect(**self.config)
+            
             if conn.is_connected():
                 cursor = conn.cursor()
                 cursor.execute(strCommand)
