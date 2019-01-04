@@ -48,7 +48,7 @@ class DbCommand:
         try:
             returnObj = tuple
             conn = mysql.connector.connect(**self.config)
-            
+
             if conn.is_connected():
                 cursor = conn.cursor()
                 cursor.execute(strCommand)
