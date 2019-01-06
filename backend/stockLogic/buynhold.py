@@ -6,6 +6,7 @@ sys.path.append("\\git\\SoSI\\backend")
 
 from crawlers.stockCrawler import StockCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
+from crawlers.companyStockStatisticCrawler import CompanyStockStatisticCrawler
 from models.dividendModel import DividendModel
 from helpers.parser import Parser
 from database.dividendDbCommand import DividendDbCommand
@@ -29,6 +30,7 @@ def GetDividendModel(stockObj):
     for stock in stockObj.AvailableStockCode:
         dividendModelAux = DividendModel()
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
+        companyStatistic = CompanyStockStatisticCrawler(stock["stockCode"])
         lpaAux = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "lpa", 0.00)
 
         dividendModelAux.Code = stock["stockCode"]
@@ -38,7 +40,7 @@ def GetDividendModel(stockObj):
         dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
         dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
         dividendModelAux.Equity = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity", 0.00))
-        dividendModelAux.Avg21Negociation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "avgNegociationValue", 0.00))
+        dividendModelAux.Avg21Negociation = companyStatistic.AvgVolume3Months
         dividendModelAux.DividendLastPrice = float(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
         dividendModelAux.DividendPeriod = 0
         dividendModelAux.DividendYeld = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld", 0.00))
