@@ -12,7 +12,7 @@ from helpers.web import Web
 from models.companyInfoModel import CompanyInfoModel
 
 ## GLOBAL
-URL = "https://br.advfn.com/bolsa-de-valores/bovespa/%s/empresa"
+URL = "https://www.bussoladoinvestidor.com.br/guia-empresas/empresa/%s/acionistas"
 
 class CompanyInfoCrawler(CompanyInfoModel):
 
@@ -21,18 +21,16 @@ class CompanyInfoCrawler(CompanyInfoModel):
     
     def __setMajorShareholder(self, stockCode):
         if stockCode == "" or stockCode == None: return None
-
-        page = Web.GetWebPage(URL % stockCode)
+        
+        urlFormatted = URL % stockCode
+        page = Web.GetWebPage(urlFormatted)
         if page is None: 
             self.MajorShareholder = ""
             return
 
-        div = page.find("div", {"class": "bx bx-stock-shares"})
-        if div is None:
-            self.MajorShareholder = ""
-            return
+        # table = page.find("table", {"class": "table table-striped table-hover"})
+        table = page.find("table")
         
-        table = div.find('table', {"class": "table_element_class"})
         if table is None:
             self.MajorShareholder = ""
             return
