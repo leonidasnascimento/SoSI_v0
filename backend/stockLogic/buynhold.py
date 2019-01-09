@@ -6,7 +6,7 @@ sys.path.append("\\git\\SoSI\\backend")
 
 from crawlers.stockCrawler import StockCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
-from crawlers.companyStockStatisticCrawler import CompanyStockStatisticCrawler
+from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
 from models.dividendModel import DividendModel
 from helpers.parser import Parser
 from database.dividendDbCommand import DividendDbCommand
@@ -30,7 +30,7 @@ def GetDividendModel(stockObj):
     for stock in stockObj.AvailableStockCode:
         dividendModelAux = DividendModel()
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
-        companyStatistic = CompanyStockStatisticCrawler(stock["stockCode"])
+        companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
         lpaAux = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "lpa", 0.00)
 
         dividendModelAux.Code = stock["stockCode"]
@@ -60,7 +60,9 @@ def GetDividendModel(stockObj):
         dividendModelAux.DividendTotalValueShared = dividendModelAux.AvgPayout12Months * dividendModelAux.NetProfit
         dividendModelAux.MajorShareholder = companyInfo.MajorShareholder
         dividendModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
-        
+        dividendModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
+        dividendModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEBITDA
+
         companyInfo = None
 
         returnObj.append(dividendModelAux)
