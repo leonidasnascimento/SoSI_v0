@@ -7,7 +7,7 @@ sys.path.append("\\git\\SoSI\\backend")
 from crawlers.stockCrawler import StockCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
 from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
-from models.dividendModel import DividendModel
+from models.buynHoldModel import BuyNHoldeModel
 from helpers.parser import Parser
 from database.dividendDbCommand import DividendDbCommand
 
@@ -23,49 +23,40 @@ FIELD_RESULTS = "results"
 FIELD_TYPE = "type"
 
 # METHODS #
-def GetDividendModel(stockObj):
+def GetBuyNHoldModel(stockObj):
     if stockObj is None: return
     
     returnObj = []
+
     for stock in stockObj.AvailableStockCode:
-        dividendModelAux = DividendModel()
+        buyHoldModelAux = BuyNHoldeModel()
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
         companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
-        lpaAux = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "lpa", 0.00)
 
-        dividendModelAux.Code = stock["stockCode"]
-        dividendModelAux.Company = stock["companyName"]
-        dividendModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "N/D")
-        dividendModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
-        dividendModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
-        dividendModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
-        dividendModelAux.Equity = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity", 0.00))
-        dividendModelAux.Avg21Negociation = companyStatistic.AvgVolume3Months
-        dividendModelAux.DividendLastPrice = float(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
-        dividendModelAux.DividendPeriod = 0
-        dividendModelAux.DividendYeld = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld", 0.00))
-        dividendModelAux.NetProfit = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
-        dividendModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
-
-        # 
-        # How To:
-        #   https://pt.wikihow.com/Calcular-a-Taxa-de-Distribui%C3%A7%C3%A3o-de-Dividendos
-        #
-        if lpaAux > 0:
-            dividendModelAux.AvgPayout12Months = (dividendModelAux.DividendYeld * dividendModelAux.StockPrice)/lpaAux 
-        else:
-            dividendModelAux.AvgPayout12Months = 0.00
-        
-        dividendModelAux.AvgPayout5Years = 0.00
-        dividendModelAux.DividendTotalValueShared = dividendModelAux.AvgPayout12Months * dividendModelAux.NetProfit
-        dividendModelAux.MajorShareholder = companyInfo.MajorShareholder
-        dividendModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
-        dividendModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
-        dividendModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEBITDA
+        buyHoldModelAux.Code = stock["stockCode"]
+        buyHoldModelAux.Company = stock["companyName"]
+        buyHoldModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "N/D")
+        buyHoldModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
+        buyHoldModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
+        buyHoldModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
+        buyHoldModelAux.Equity = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity", 0.00))
+        buyHoldModelAux.Avg21Negociation = companyStatistic.AvgVolume3Months
+        buyHoldModelAux.DividendLastPrice = float(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
+        buyHoldModelAux.DividendPeriod = 0
+        buyHoldModelAux.DividendYeld = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld", 0.00))
+        buyHoldModelAux.NetProfit = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
+        buyHoldModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
+        buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRation
+        buyHoldModelAux.AvgPayout5Years = 0.00
+        buyHoldModelAux.DividendTotalValueShared = buyHoldModelAux.AvgPayout12Months * buyHoldModelAux.NetProfit
+        buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
+        buyHoldModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
+        buyHoldModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
+        buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEBITDA
 
         companyInfo = None
 
-        returnObj.append(dividendModelAux)
+        returnObj.append(buyHoldModelAux)
     return returnObj
 
 def GetBasicInfo(lstToDigInto, stockCode, fieldToGet, defaultValue):
@@ -106,7 +97,7 @@ def Save(lstDividend):
 #########
 
 stockObj = StockCrawler(STOCK_TYPE_TO_FILTER)
-lstDividend = GetDividendModel(stockObj)
+lstDividend = GetBuyNHoldModel(stockObj)
 
 if (lstDividend is None) or (Save(lstDividend)) == False:
     raise SystemError()
