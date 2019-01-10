@@ -51,6 +51,10 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         pRoe = page.find(text=re.compile('^Retorno Sobre o Patrimônio Líquido'))
         pGrossDebitEbitida = ""
 
+        ###########
+        ##  URL  ##
+        ###########
+
         if not (pgAvgVolume10Days is None):
             avg10DaysVolume = pgAvgVolume10Days.parent.parent.find_next_sibling("td").get_text()
         
