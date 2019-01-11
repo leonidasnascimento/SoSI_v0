@@ -35,7 +35,7 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         avg10DaysVolume = ""
         roe = ""
         grossDebitEbitda = ""
-        payoutRation = ""
+        payoutRatio = ""
 
         url = (URL % stockCode)
         page = Web.GetWebPage(url)
@@ -45,13 +45,13 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
             self.AvgVolume10Days = 0.00
             self.ReturnOnEquity = 0.00
             self.GrossDebitOverEBITDA = 0.00
-            self.PayoutRation = 0.00
+            self.PayoutRatio = 0.00
             return
 
         pgAvgVolume3Mos = page.find(text=re.compile('^Volume Médio \(3 meses\)'))
         pgAvgVolume10Days = page.find(text=re.compile('^Volume Médio \(10 dias\)'))
         pRoe = page.find(text=re.compile('^Retorno Sobre o Patrimônio Líquido'))
-        pPayoutRation = page.find(text=re.compile('^Índice de Payout'))        
+        pPayoutRatio = page.find(text=re.compile('^Índice de Payout'))        
         pGrossDebitEbitida = ""
 
         ###########
@@ -67,8 +67,8 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         if not (pRoe is None):
             roe = pRoe.parent.parent.find_next_sibling("td").get_text()
 
-        if not (pPayoutRation is None):
-            payoutRation = pPayoutRation.parent.parent.find_next_sibling("td").get_text()
+        if not (pPayoutRatio is None):
+            payoutRation = pPayoutRatio.parent.parent.find_next_sibling("td").get_text()
 
         ###########
         ## URL 2 ##
@@ -88,4 +88,4 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         self.AvgVolume3Months = Parser.ParseOrdinalNumber(avg3MonthsVolume)
         self.ReturnOnEquity = Parser.ParseFloat(roe)
         self.GrossDebitOverEBITDA = Parser.ParseFloat(grossDebitEbitda) / 100 
-        self.PayoutRation = Parser.ParseFloat(payoutRation)
+        self.PayoutRatio = Parser.ParseFloat(payoutRatio)

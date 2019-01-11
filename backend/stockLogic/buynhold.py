@@ -46,7 +46,7 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.DividendYeld = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "dividendYeld", 0.00))
         buyHoldModelAux.NetProfit = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
         buyHoldModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
-        buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRation
+        buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRatio
         buyHoldModelAux.AvgPayout5Years = 0.00
         buyHoldModelAux.DividendTotalValueShared = buyHoldModelAux.AvgPayout12Months * buyHoldModelAux.NetProfit
         buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
@@ -55,6 +55,7 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEBITDA
 
         companyInfo = None
+        companyStatistic = None
 
         returnObj.append(buyHoldModelAux)
     return returnObj
