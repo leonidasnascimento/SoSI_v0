@@ -8,7 +8,7 @@ class DbCommand:
         'password': 'sosidb',
         'host': '127.0.0.1',
         'database': 'sys',
-        'raise_on_warnings': True
+        'raise_on_warnings': False
     }
 
     def Commit(self, strCommand):
