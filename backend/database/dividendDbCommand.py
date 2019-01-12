@@ -3,7 +3,7 @@ import sys
 sys.path.append("\\git\\SoSI\\backend")
 
 from database.base.dbCommand import DbCommand
-from stockLogic.models.dividendModel import DividendModel
+from stockLogic.models.buynHoldModel import BuyNHoldeModel
 
 class DividendDbCommand:
     def Save(self, obj):

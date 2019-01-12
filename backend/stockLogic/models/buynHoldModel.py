@@ -1,4 +1,4 @@
-class DividendModel:
+class BuyNHoldeModel:
     Code: ""
     Company: ""
     Sector: ""
