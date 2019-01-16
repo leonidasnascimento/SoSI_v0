@@ -38,6 +38,8 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         grossDebitEbitda = ""
         payoutRatio = ""
         roe_avg5yrs = ""
+        dy = ""
+        dy_avg5yrs = ""
 
         url = (URL % stockCode)
         page = Web.GetWebPage(url)
@@ -48,7 +50,9 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
             self.ReturnOnEquity = 0.00
             self.GrossDebitOverEbitida = 0.00
             self.PayoutRatio = 0.00
-            self.GrossDebitOverEbitida_5yrAvg = 0.00
+            self.ReturnOnEquity_5yrAvg = 0.00
+            self.DividendYeld = 0.00
+            self.DividendYeld_5yrAvg = 0.00
             return
 
         pgAvgVolume3Mos = page.find(text=re.compile('^Volume Médio \(3 meses\)'))
@@ -57,6 +61,8 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         pPayoutRatio = page.find(text=re.compile('^Índice de Payout'))        
         pGrossDebitEbitida = ""
         pRoe_avg5yrs = ""
+        pDy = ""
+        pDy_avg5yrs = ""
 
         #############
         ##  YAHOO  ##
@@ -72,7 +78,7 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
             roe = pRoe.parent.parent.find_next_sibling("td").get_text()
 
         if not (pPayoutRatio is None):
-            payoutRation = pPayoutRatio.parent.parent.find_next_sibling("td").get_text()
+            payoutRatio = pPayoutRatio.parent.parent.find_next_sibling("td").get_text()
 
         ###########
         ## ADVFN ##
@@ -95,10 +101,18 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         page_reuters_financial = Web.GetWebPage(url_reuters_financial)
 
         if not (page_reuters_financial is None):
-            pRoe_avg5yrs = page_reuters_financial.find(text=re.compile('Return on Equity - 5 Yr\. Avg\.'))
-            
+            pRoe_avg5yrs = page_reuters_financial.find("td", text=re.compile('Return on Equity - 5 Yr\. Avg\.'))
+            pDy = page_reuters_financial.find("td", text=re.compile('Dividend Yield'))
+            pDy_avg5yrs = page_reuters_financial.find("td", text=re.compile('Dividend Yield - 5 Year Avg'))
+
             if not (pRoe_avg5yrs is None):
-                roe_avg5yrs = pRoe_avg5yrs.parent.find_next_sibling("td").get_text()
+                roe_avg5yrs = pRoe_avg5yrs.find_next_sibling("td").get_text()
+            
+            if not (pDy is None):
+                dy = pDy.find_next_sibling("td").get_text()
+            
+            if not (pDy_avg5yrs is None):
+                dy_avg5yrs = pDy_avg5yrs.find_next_sibling("td").get_text()
 
         # filling the properties
         self.AvgVolume10Days = Parser.ParseOrdinalNumber(avg10DaysVolume)
@@ -106,4 +120,6 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         self.ReturnOnEquity = Parser.ParseFloat(roe)
         self.GrossDebitOverEbitida = Parser.ParseFloat(grossDebitEbitda) / 100 
         self.PayoutRatio = Parser.ParseFloat(payoutRatio)
-        self.GrossDebitOverEbitida_5yrAvg = float(roe_avg5yrs) / 100
+        self.ReturnOnEquity_5yrAvg = float(roe_avg5yrs) / 100
+        self.DividendYeld = float(dy) / 100
+        self.DividendYeld_5yrAvg = float(dy_avg5yrs) / 100

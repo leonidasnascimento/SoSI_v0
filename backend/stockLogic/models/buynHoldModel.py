@@ -14,10 +14,11 @@ class BuyNHoldeModel:
     DividendTotalValueShared: 0.00
     NetProfit: 0.00
     DividendYeld: 0.00
+    DividendYeld_5yrAvg: 0.00
     AvgPayout12Months: 0.00
     AvgPayout5Years: 0.00
     MajorShareholder: ""
     DetailsPage: ""
     ReturnOnEquity: 0.00
     GrossDebitOverEbitda: 0.00
-    GrossDebitOverEbitda_5yrAvg: 0.00
+    ReturnOnEquity_5yrAvg: 0.00
