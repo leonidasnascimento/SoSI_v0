@@ -20,3 +20,4 @@ class BuyNHoldeModel:
     DetailsPage: ""
     ReturnOnEquity: 0.00
     GrossDebitOverEbitda: 0.00
+    GrossDebitOverEbitda_5yrAvg: 0.00

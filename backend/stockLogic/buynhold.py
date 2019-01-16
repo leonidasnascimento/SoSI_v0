@@ -52,7 +52,8 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
         buyHoldModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
         buyHoldModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
-        buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEBITDA
+        buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEbitida
+        buyHoldModelAux.GrossDebitOverEbitda_5yrAvg = companyStatistic.GrossDebitOverEbitida_5yrAvg
 
         companyInfo = None
         companyStatistic = None
