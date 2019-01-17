@@ -16,6 +16,7 @@ from models.companyStatistcModel import CompanyStatistcModel
 URL = "https://br.financas.yahoo.com/quote/%s.SA/key-statistics"
 URL_ADVFN_FUNDAMENTOS = "https://br.advfn.com/bolsa-de-valores/bovespa/%s/fundamentos"
 URL_REUTERS_FINANCIAL_HIGHLIGHTS = "https://www.reuters.com/finance/stocks/financial-highlights/%s.SA"
+URL_YAHOO_CASH_FLOW = "https://br.financas.yahoo.com/quote/%s.SA/cash-flow"
 
 class CompanyStatisticCrawler(CompanyStatistcModel):
     def __init__(self, stockCode):
@@ -64,9 +65,9 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         pDy = ""
         pDy_avg5yrs = ""
 
-        #############
-        ##  YAHOO  ##
-        #############
+        ##############################
+        ##  YAHOO - KEY STATISTICS  ##
+        ##############################
 
         if not (pgAvgVolume10Days is None):
             avg10DaysVolume = pgAvgVolume10Days.parent.parent.find_next_sibling("td").get_text()
@@ -120,6 +121,6 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         self.ReturnOnEquity = Parser.ParseFloat(roe)
         self.GrossDebitOverEbitida = Parser.ParseFloat(grossDebitEbitda) / 100 
         self.PayoutRatio = Parser.ParseFloat(payoutRatio)
-        self.ReturnOnEquity_5yrAvg = float(roe_avg5yrs) / 100
-        self.DividendYeld = float(dy) / 100
-        self.DividendYeld_5yrAvg = float(dy_avg5yrs) / 100
+        self.ReturnOnEquity_5yrAvg = float(roe_avg5yrs if roe_avg5yrs != "" else "0.00") / 100
+        self.DividendYeld = float(dy if dy != "" else "0.00") / 100
+        self.DividendYeld_5yrAvg = float(float(dy_avg5yrs if dy_avg5yrs != "" else "0.00")) / 100

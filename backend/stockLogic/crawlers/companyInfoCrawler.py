@@ -17,6 +17,11 @@ URL = "https://www.bussoladoinvestidor.com.br/guia-empresas/empresa/%s/acionista
 class CompanyInfoCrawler(CompanyInfoModel):
 
     def __init__(self, stockCode):
+        self.Code = stockCode
+        self.Company = ""
+        self.MajorShareholder = ""
+        self.SecondSector = ""
+        self.Sector = ""
         self.__setMajorShareholder(stockCode)
     
     def __setMajorShareholder(self, stockCode):

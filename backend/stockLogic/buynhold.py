@@ -7,6 +7,7 @@ sys.path.append("\\git\\SoSI\\backend")
 from crawlers.stockCrawler import StockCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
 from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
+from crawlers.cashFlowHistoryCrawler import CashFlowHistoryCrawler
 from models.buynHoldModel import BuyNHoldeModel
 from helpers.parser import Parser
 from database.dividendDbCommand import DividendDbCommand
@@ -32,8 +33,9 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux = BuyNHoldeModel()
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
         companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
+        cashFlowHistData = CashFlowHistoryCrawler(stock["stockCode"])
 
-        buyHoldModelAux.Code = stock["stockCode"]
+        buyHoldModelAux.Code = companyInfo.Code
         buyHoldModelAux.Company = stock["companyName"]
         buyHoldModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "N/D")
         buyHoldModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
@@ -48,16 +50,18 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
         buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRatio
         buyHoldModelAux.AvgPayout5Years = 0.00
-        buyHoldModelAux.DividendTotalValueShared = buyHoldModelAux.AvgPayout12Months * buyHoldModelAux.NetProfit
+        buyHoldModelAux.DividendTotalValueShared = companyStatistic.PayoutRatio * buyHoldModelAux.NetProfit
         buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
         buyHoldModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
         buyHoldModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
         buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEbitida
         buyHoldModelAux.ReturnOnEquity_5yrAvg = companyStatistic.ReturnOnEquity_5yrAvg
         buyHoldModelAux.DividendYeld_5yrAvg = companyStatistic.DividendYeld_5yrAvg
+        buyHoldModelAux.AvgPayout5Years = cashFlowHistData.GetAvgDividendShared() / cashFlowHistData.GetAvgNetIncome()
 
         companyInfo = None
         companyStatistic = None
+        cashFlowHistData = None
 
         returnObj.append(buyHoldModelAux)
     return returnObj
