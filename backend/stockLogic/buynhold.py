@@ -49,15 +49,17 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.NetProfit = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
         buyHoldModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
         buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRatio
-        buyHoldModelAux.AvgPayout5Years = 0.00
         buyHoldModelAux.DividendTotalValueShared = companyStatistic.PayoutRatio * buyHoldModelAux.NetProfit
         buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
         buyHoldModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
         buyHoldModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
-        buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEbitida
         buyHoldModelAux.ReturnOnEquity_5yrAvg = companyStatistic.ReturnOnEquity_5yrAvg
+        buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEbitida
         buyHoldModelAux.DividendYeld_5yrAvg = companyStatistic.DividendYeld_5yrAvg
         buyHoldModelAux.AvgPayout5Years = cashFlowHistData.GetAvgDividendShared() / cashFlowHistData.GetAvgNetIncome()
+        buyHoldModelAux.HasDividendBeenSharedInLast5Yrs = cashFlowHistData.HasDividendBeenSharedInLast5Yrs()
+        buyHoldModelAux.HasDividendGrowthInLast5Yrs = cashFlowHistData.HasDividendGrowthInLast5Yrs()
+        buyHoldModelAux.HasNetProfitBeenRegularFor5Yrs = cashFlowHistData.HasNetProfitBeenRegularFor5Yrs()
 
         companyInfo = None
         companyStatistic = None

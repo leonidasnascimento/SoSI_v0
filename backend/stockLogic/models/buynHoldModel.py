@@ -22,3 +22,6 @@ class BuyNHoldeModel:
     ReturnOnEquity: 0.00
     GrossDebitOverEbitda: 0.00
     ReturnOnEquity_5yrAvg: 0.00
+    HasDividendBeenSharedInLast5Yrs: 0
+    HasNetProfitBeenRegularFor5Yrs: 0
+    HasDividendGrowthInLast5Yrs: 0
