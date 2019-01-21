@@ -59,11 +59,11 @@ class CashFlowHistoryModel:
 
         if list is None: return returnValue
         
-        x1 = datetime.datetime.strptime(list[0].Date, "%Y-%m-%d").year  
-        x2 = datetime.datetime.strptime(list[1].Date, "%Y-%m-%d").year if len(list) > 1 else 0 
-        y1 = list[0].Value
-        y2 = list[1].Value if len(list) > 1 else 0
-        tg = (y2 - y1)/(x2 - x1)
+        x1 = datetime.datetime.strptime(list[0].Date, "%Y-%m-%d").year if (len(list) == 1) else 0 
+        x2 = datetime.datetime.strptime(list[1].Date, "%Y-%m-%d").year if (len(list) > 1) else 0 
+        y1 = list[0].Value if (len(list) == 1) else 0
+        y2 = list[1].Value if (len(list) > 1) else 0
+        tg = (y2 - y1)/((x2 - x1) if ((x2 - x1) > 0) else 1)
         b = y1 - (tg * x1)
         returnValue = (tg * nextXValue) + b
 
