@@ -12,7 +12,7 @@ class CashFlowHistoryModel:
         if self.ListData is None: return 0  
         
         netIncomeValueList = [data.Value for data in self.ListData if data.Description == self.NetIncomeLabel]
-        netIncomeAvg = sum(netIncomeValueList) / len(netIncomeValueList if len(netIncomeValueList) > 0 else 1)
+        netIncomeAvg = sum(netIncomeValueList) / len(netIncomeValueList) if len(netIncomeValueList) > 0 else 1
         
         return netIncomeAvg
     
@@ -20,7 +20,7 @@ class CashFlowHistoryModel:
         if self.ListData is None: return 0  
 
         dividendValueList = [data.Value for data in self.ListData if data.Description == self.DividendLabel]
-        dividendAvg = sum(dividendValueList) / len(dividendValueList if len(dividendValueList) > 0 else 1)
+        dividendAvg = sum(dividendValueList) / len(dividendValueList) if len(dividendValueList) > 0 else 1
 
         return dividendAvg
     
