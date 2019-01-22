@@ -10,7 +10,7 @@ from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
 from crawlers.cashFlowHistoryCrawler import CashFlowHistoryCrawler
 from models.buynHoldModel import BuyNHoldeModel
 from helpers.parser import Parser
-from database.dividendDbCommand import DividendDbCommand
+from database.buyNHoldDbCommand import BuyNHoldDbCommand
 
 ### GLOBAL CONSTANTS ###
 STOCK_TYPE_TO_FILTER = "ON"  # Leave it empty for all types
@@ -97,7 +97,7 @@ def GetDividendValue(lstToDigInto, stockCode, order: 1, defaultValue):
 
 def Save(lstDividend):
     for dividend in lstDividend:
-        if DividendDbCommand().Save(dividend) == False:
+        if BuyNHoldDbCommand().Save(dividend) == False:
             return False
     return True
 
