@@ -39,6 +39,9 @@ class CashFlowHistoryModel:
         lstAux = [data for data in self.ListData if data.Description == self.DividendLabel]
         nextVal = self.GetSimpleLinearRegression(lstAux, datetime.date.today().year)
         
+        if len(lstAux) == 0:
+            return 0
+
         if (nextVal > lstAux[0].Value):
             return 1
         else:
@@ -48,6 +51,9 @@ class CashFlowHistoryModel:
         lstAux = [data for data in self.ListData if data.Description == self.NetIncomeLabel]
         nextVal = self.GetSimpleLinearRegression(lstAux, datetime.date.today().year)
         
+        if len(lstAux) == 0:
+            return 0
+
         if (nextVal > lstAux[len(lstAux)-1].Value):
             return 1
         else:

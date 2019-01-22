@@ -121,6 +121,6 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         self.ReturnOnEquity = Parser.ParseFloat(roe)
         self.GrossDebitOverEbitida = Parser.ParseFloat(grossDebitEbitda) / 100 
         self.PayoutRatio = Parser.ParseFloat(payoutRatio)
-        self.ReturnOnEquity_5yrAvg = float(roe_avg5yrs if roe_avg5yrs != "" else "0.00") / 100
-        self.DividendYeld = float(dy if dy != "" else "0.00") / 100
-        self.DividendYeld_5yrAvg = float(float(dy_avg5yrs if dy_avg5yrs != "" else "0.00")) / 100
+        self.ReturnOnEquity_5yrAvg = float(roe_avg5yrs if roe_avg5yrs != "" and roe_avg5yrs != "--" and roe_avg5yrs != "-" else "0.00") / 100
+        self.DividendYeld = float(dy if dy != "" and dy != "--" and dy != "-" else "0.00") / 100
+        self.DividendYeld_5yrAvg = float(float(dy_avg5yrs if dy_avg5yrs != "" and dy_avg5yrs != "--" and dy_avg5yrs != "-" else "0.00")) / 100
