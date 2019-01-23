@@ -37,7 +37,7 @@ def GetBuyNHoldModel(stockObj):
 
         buyHoldModelAux.Code = companyInfo.Code
         buyHoldModelAux.Company = stock["companyName"]
-        buyHoldModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", "N/D")
+        buyHoldModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", ("ON" if str(stock["stockCode"]).find("3") > -1 else "PN"))
         buyHoldModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
         buyHoldModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
         buyHoldModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
