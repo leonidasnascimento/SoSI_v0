@@ -107,13 +107,13 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
             pDy_avg5yrs = page_reuters_financial.find("td", text=re.compile('Dividend Yield - 5 Year Avg'))
 
             if not (pRoe_avg5yrs is None):
-                roe_avg5yrs = pRoe_avg5yrs.find_next_sibling("td").get_text()
+                roe_avg5yrs = str(pRoe_avg5yrs.find_next_sibling("td").get_text()).replace(",", "")
             
             if not (pDy is None):
-                dy = pDy.find_next_sibling("td").get_text()
+                dy = str(pDy.find_next_sibling("td").get_text()).replace(",", "")
             
             if not (pDy_avg5yrs is None):
-                dy_avg5yrs = pDy_avg5yrs.find_next_sibling("td").get_text()
+                dy_avg5yrs = str(pDy_avg5yrs.find_next_sibling("td").get_text()).replace(",", "")
 
         # filling the properties
         self.AvgVolume10Days = Parser.ParseOrdinalNumber(avg10DaysVolume)

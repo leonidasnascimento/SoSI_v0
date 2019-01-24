@@ -7,6 +7,18 @@ class Parser:
         if valStr is None:
             return 0.00
 
+        if str(valStr) == "N/A":
+            return 0.00
+
+        if str(valStr) == "N/D":
+            return 0.00
+
+        if str(valStr) == "--":
+            return 0.00
+
+        if str(valStr) == "-":
+            return 0.00
+
         if str(valStr).find('.') > 0:
             valStr = str(valStr).replace('.', '')
 

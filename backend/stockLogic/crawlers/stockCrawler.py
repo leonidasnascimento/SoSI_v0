@@ -5,11 +5,10 @@ import threading
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
 
-from dateutil import parser
-from datetime import datetime
-from helpers.parser import Parser
 from helpers.web import Web
-
+from helpers.parser import Parser
+from datetime import datetime
+from dateutil import parser
 
 #############################
 ##                         ##
@@ -107,12 +106,16 @@ class StockCrawler(object):
         self.StocksBasicInfo = []
         threads = []
 
+        if (self.AvailableStockCode is None):
+            return
+
         if (len(self.AvailableStockCode) == 0):
             return
 
         # Queueing the tasks
         for stock in self.AvailableStockCode:
-            self.GetStocksBasicInfoThreading(stock["stockCode"], stock["stockDetails"])
+            self.GetStocksBasicInfoThreading(
+                stock["stockCode"], stock["stockDetails"])
             # threads.append(threading.Thread(target=self.GetStocksBasicInfoThreading, args=(stock["stockCode"], stock["stockDetails"],)))
 
         # self.ExecuteThread(threads)
@@ -120,10 +123,12 @@ class StockCrawler(object):
     def GetStocksBasicInfoThreading(self, stockCode, stockDetailsPage):
         stockBasicInfoList = {}
         stocksPage = Web.GetWebPage(self.MAIN_URL % stockDetailsPage)
-        if stocksPage is None: return
-        
+        if stocksPage is None:
+            return
+
         stocksTbl = stocksPage.findChildren("table")
-        if (stocksTbl is None) or (len(stocksTbl) != 5): return
+        if (stocksTbl is None) or (len(stocksTbl) != 5):
+            return
 
         # REGISTRATION INFO
         if (stocksTbl[0].contents is not None) and (len(stocksTbl[0].contents) == 11):
@@ -183,12 +188,12 @@ class StockCrawler(object):
         if (stocksTbl[2].contents != None) and (len(stocksTbl[2].contents) == 25):
 
             # DIVIDEND YELD
-            if (stocksTbl[2].contents[17] != None) and (len(stocksTbl[2].contents[17]) == 13):            
+            if (stocksTbl[2].contents[17] != None) and (len(stocksTbl[2].contents[17]) == 13):
                 dividendYeld = stocksTbl[2].contents[17].contents[7].get_text()
 
         # LPA
-        spanList = stocksPage.find_all('span', {'class' :'txt'})
-        
+        spanList = stocksPage.find_all('span', {'class': 'txt'})
+
         if not (spanList is None):
             lpaLabel = [l for l in spanList if str(l.text).lower() == "lpa"]
             if (not (lpaLabel is None)) or (len(lpaLabel) > 0):
@@ -246,23 +251,28 @@ class StockCrawler(object):
             if (dividendTbl is None):
                 continue
 
-            stocks = {}    
+            stocks = {}
             stocks["stockCode"] = stock["stockCode"]
             stocks["dividends"] = []
 
             for row in dividendRows:
                 dividendRowCounter += 1
 
-                if (dividendRowRead == 20): break
-                if (dividendRowCounter % 2 == 0): continue
-                if len(row.contents) != 9: continue
-                if row.contents[5].get_text().lower().find("dividend") < 0: continue
-                
+                if (dividendRowRead == 20):
+                    break
+                if (dividendRowCounter % 2 == 0):
+                    continue
+                if len(row.contents) != 9:
+                    continue
+                if row.contents[5].get_text().lower().find("dividend") < 0:
+                    continue
+
                 dividendRowRead += 1
                 dateAux = row.contents[1].get_text()
                 # dateAux = datetime.strptime(row.contents[1].get_text(), "%d/%m/%Y").strftime("%Y-%m-%d")
 
-                stocks["dividends"].append({"date": dateAux, "dividend": Parser.ParseFloat(row.contents[3].get_text())})
+                stocks["dividends"].append(
+                    {"date": dateAux, "dividend": Parser.ParseFloat(row.contents[3].get_text())})
 
             self.DividendsData.append(stocks)
 

@@ -4,13 +4,13 @@ import sys
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
 
-from crawlers.stockCrawler import StockCrawler
-from crawlers.companyInfoCrawler import CompanyInfoCrawler
-from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
-from crawlers.cashFlowHistoryCrawler import CashFlowHistoryCrawler
-from models.buynHoldModel import BuyNHoldeModel
-from helpers.parser import Parser
 from database.buyNHoldDbCommand import BuyNHoldDbCommand
+from helpers.parser import Parser
+from models.buynHoldModel import BuyNHoldeModel
+from crawlers.cashFlowHistoryCrawler import CashFlowHistoryCrawler
+from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
+from crawlers.companyInfoCrawler import CompanyInfoCrawler
+from crawlers.stockCrawler import StockCrawler
 
 ### GLOBAL CONSTANTS ###
 STOCK_TYPE_TO_FILTER = "ON"  # Leave it empty for all types
@@ -25,8 +25,12 @@ FIELD_TYPE = "type"
 
 # METHODS #
 def GetBuyNHoldModel(stockObj):
-    if stockObj is None: return
-    
+    if stockObj is None:
+        return
+
+    if stockObj.AvailableStockCode is None:
+        return
+
     returnObj = []
 
     for stock in stockObj.AvailableStockCode:
@@ -68,32 +72,42 @@ def GetBuyNHoldModel(stockObj):
         returnObj.append(buyHoldModelAux)
     return returnObj
 
+
 def GetBasicInfo(lstToDigInto, stockCode, fieldToGet, defaultValue):
-    if lstToDigInto is None: return defaultValue
-    
+    if lstToDigInto is None:
+        return defaultValue
+
     lstReturn = []
-    lstReturn = [ x[fieldToGet] for x in lstToDigInto if x["stock"] == stockCode ]
+    lstReturn = [x[fieldToGet]
+                 for x in lstToDigInto if x["stock"] == stockCode]
 
-    if lstReturn is None or len(lstReturn) == 0: return defaultValue
+    if lstReturn is None or len(lstReturn) == 0:
+        return defaultValue
 
-    return lstReturn[0] if str(lstReturn[0]) != "" or str(lstReturn[0]) != '' else defaultValue 
+    return lstReturn[0] if str(lstReturn[0]) != "" or str(lstReturn[0]) != '' else defaultValue
+
 
 def GetDividendValue(lstToDigInto, stockCode, order: 1, defaultValue):
-    if lstToDigInto is None: return defaultValue
-    
+    if lstToDigInto is None:
+        return defaultValue
+
     lstDividend = []
-    lstDividend = [ x["dividends"] for x in lstToDigInto if x["stockCode"] == stockCode ]
+    lstDividend = [x["dividends"]
+                   for x in lstToDigInto if x["stockCode"] == stockCode]
     dividendPrice = defaultValue
 
-    if lstDividend is None or len(lstDividend) == 0: return defaultValue
-    if lstDividend[0] is None or len(lstDividend[0]) == 0: return defaultValue
+    if lstDividend is None or len(lstDividend) == 0:
+        return defaultValue
+    if lstDividend[0] is None or len(lstDividend[0]) == 0:
+        return defaultValue
 
-    if order == 1: 
+    if order == 1:
         dividendPrice = lstDividend[0][0]['dividend']
     else:
         dividendPrice = lstDividend[0][len(lstDividend[0]) - 1]['dividend']
 
     return dividendPrice if dividendPrice != "" else defaultValue
+
 
 def Save(lstDividend):
     for dividend in lstDividend:
@@ -104,6 +118,7 @@ def Save(lstDividend):
 #########
 ## INI ##
 #########
+
 
 stockObj = StockCrawler(STOCK_TYPE_TO_FILTER)
 lstDividend = GetBuyNHoldModel(stockObj)
