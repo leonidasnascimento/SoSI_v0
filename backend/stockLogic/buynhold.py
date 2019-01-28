@@ -13,7 +13,7 @@ from crawlers.companyInfoCrawler import CompanyInfoCrawler
 from crawlers.stockCrawler import StockCrawler
 
 ### GLOBAL CONSTANTS ###
-STOCK_TYPE_TO_FILTER = "ON"  # Leave it empty for all types
+STOCK_TYPE_TO_FILTER = ""  # Leave it empty for all types
 
 ### GLOBAL VARIABLES ###
 gStockTotalAmountObj = None
@@ -40,7 +40,7 @@ def GetBuyNHoldModel(stockObj):
         cashFlowHistData = CashFlowHistoryCrawler(stock["stockCode"])
 
         buyHoldModelAux.Code = companyInfo.Code
-        buyHoldModelAux.Company = stock["companyName"]
+        buyHoldModelAux.Company = companyInfo.Company
         buyHoldModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", ("ON" if str(stock["stockCode"]).find("3") > -1 else "PN"))
         buyHoldModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
         buyHoldModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
@@ -64,6 +64,8 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.HasDividendBeenSharedInLast5Yrs = cashFlowHistData.HasDividendBeenSharedInLast5Yrs()
         buyHoldModelAux.HasDividendGrowthInLast5Yrs = cashFlowHistData.HasDividendGrowthInLast5Yrs()
         buyHoldModelAux.HasNetProfitBeenRegularFor5Yrs = cashFlowHistData.HasNetProfitBeenRegularFor5Yrs()
+
+        print("%s - OK" % { companyInfo.Code })
 
         companyInfo = None
         companyStatistic = None
