@@ -99,8 +99,8 @@ class StockCrawler(object):
 
             __availableStocksSingleton.append(stockAux)
 
-        # return __availableStocksSingleton
-        return [x for x in __availableStocksSingleton if (x["stockCode"] == "ITUB3" or x["stockCode"] == "BBDC3" or x["stockCode"] == "CSAN3")]
+        return __availableStocksSingleton
+        # return [x for x in __availableStocksSingleton if (x["stockCode"] == "ITUB3" or x["stockCode"] == "BBDC3" or x["stockCode"] == "CSAN3")]
 
     def GetStocksBasicInfo(self):
         self.StocksBasicInfo = []
