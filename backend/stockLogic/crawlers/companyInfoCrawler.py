@@ -1,6 +1,7 @@
 import sys
 import time
 import threading
+import re
 
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
@@ -12,7 +13,7 @@ from helpers.web import Web
 from models.companyInfoModel import CompanyInfoModel
 
 ## GLOBAL
-URL = "https://www.bussoladoinvestidor.com.br/guia-empresas/empresa/%s/acionistas"
+URL_MEUS_DIVIDENDOS = "https://www.meusdividendos.com/empresa/%s"
 URL_YAHOO = "https://br.financas.yahoo.com/quote/%s.SA"
 
 class CompanyInfoCrawler(CompanyInfoModel):
@@ -48,35 +49,24 @@ class CompanyInfoCrawler(CompanyInfoModel):
     def __setMajorShareholder(self, stockCode):
         if stockCode == "" or stockCode == None: return
         
-        urlFormatted = URL % stockCode
+        self.MajorShareholder = ""
+
+        lstWords = list(stockCode)
+        urlFormatted = URL_MEUS_DIVIDENDOS % str(stockCode).replace(lstWords[len(lstWords)-1], '')
+        
         page = Web.GetWebPage(urlFormatted)
-        if page is None: 
-            self.MajorShareholder = ""
-            return
+        if page is None: return
 
-        # table = page.find("table", {"class": "table table-striped table-hover"})
-        table = page.find("table")
-        
-        if table is None:
-            self.MajorShareholder = ""
-            return
+        span = page.find("span", text=re.compile(' Principais Acionistas'))
+        if span is None: return
 
-        # Major Shareholder
-        
-        # <TABLE>
-        if table.contents is None or len(table.contents) < 2: 
-            self.MajorShareholder = ""
-            return
-        
-        # <TR>
-        if table.contents[1] is None or len(table.contents[1]) == 0:
-            self.MajorShareholder = ""
-            return
+        table = span.parent.parent.find_next_sibling("div").find("table")
+        if table is None: return
 
-        # <TD>
-        if table.contents[1].contents is None or len(table.contents[1].contents) == 0:
-            self.MajorShareholder = ""
-            return
+        tbody = table.next()[0].parent.next_sibling
+        if tbody is None: return
 
-        # POPULATIN THE OBJECT
-        self.MajorShareholder = str(table.contents[1].contents[0].get_text()).lstrip().rstrip()
+        majorShareholderAux = tbody.find("td").get_text()
+        self.MajorShareholder = majorShareholderAux
+
+        pass        
