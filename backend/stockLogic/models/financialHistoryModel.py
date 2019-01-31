@@ -1,12 +1,13 @@
 import datetime
 
-from models.cashFlowDataModel import CashFlowDataModel
+from models.financialDataModel import FinancialDataModel
 
-class CashFlowHistoryModel:
+class FinancialHistoryModel:
     Code: ""
     ListData: []
     DividendLabel: ""
     NetIncomeLabel: ""
+    NetWorthLabel: ""
 
     def GetAvgNetIncome(self):
         if self.ListData is None: return 0  
@@ -16,6 +17,24 @@ class CashFlowHistoryModel:
         
         return netIncomeAvg
     
+    def GetLastNetIncome(self):
+        value = self.__GetLastValueFromHistory(self.NetIncomeLabel)
+        return value
+
+    def GetLastNetWorth(self):
+        value = self.__GetLastValueFromHistory(self.NetWorthLabel)
+        return value
+    
+    def __GetLastValueFromHistory(self, label):
+        if self.ListData is None: return 0  
+        
+        valueList = [data.Value for data in self.ListData if data.Description == label]
+        if valueList is None: return 0.00
+        if len(valueList) == 0: return 0.00
+
+        value = valueList[0]        
+        return value
+
     def GetAvgDividendShared(self):
         if self.ListData is None: return 0  
 

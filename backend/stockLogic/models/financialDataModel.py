@@ -1,6 +1,6 @@
 import DateTime
 
-class CashFlowDataModel:
+class FinancialDataModel:
     Description: ""
     Date: ""
     Value: 0.00

@@ -7,7 +7,7 @@ sys.path.append("\\git\\SoSI\\backend")
 from database.buyNHoldDbCommand import BuyNHoldDbCommand
 from helpers.parser import Parser
 from models.buynHoldModel import BuyNHoldeModel
-from crawlers.cashFlowHistoryCrawler import CashFlowHistoryCrawler
+from crawlers.financialHistoryCrawler import FinancialHistoryCrawler
 from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
 from crawlers.stockCrawler import StockCrawler
@@ -37,39 +37,39 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux = BuyNHoldeModel()
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
         companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
-        cashFlowHistData = CashFlowHistoryCrawler(stock["stockCode"])
+        financialHistData = FinancialHistoryCrawler(stock["stockCode"])
 
         buyHoldModelAux.Code = companyInfo.Code
         buyHoldModelAux.Company = companyInfo.Company
-        buyHoldModelAux.Type = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockType", ("ON" if str(stock["stockCode"]).find("3") > -1 else "PN"))
+        buyHoldModelAux.Type = companyInfo.Type
         buyHoldModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
-        buyHoldModelAux.Sector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "primarySector", "")
-        buyHoldModelAux.SecondSector = GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "secondarySector", "")
-        buyHoldModelAux.Equity = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "equity", 0.00))
+        buyHoldModelAux.Sector = companyInfo.Sector
+        buyHoldModelAux.SecondSector = companyInfo.SecondSector
+        buyHoldModelAux.Equity = financialHistData.GetLastNetWorth()
         buyHoldModelAux.Avg21Negociation = companyStatistic.AvgVolume3Months
         buyHoldModelAux.DividendLastPrice = float(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
         buyHoldModelAux.DividendPeriod = 0
         buyHoldModelAux.DividendYeld = companyStatistic.DividendYeld
-        buyHoldModelAux.NetProfit = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "netProfit", 0.00))
+        buyHoldModelAux.NetProfit = financialHistData.GetLastNetIncome()
         buyHoldModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
         buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRatio
         buyHoldModelAux.DividendTotalValueShared = companyStatistic.PayoutRatio * buyHoldModelAux.NetProfit
         buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
-        buyHoldModelAux.Valuation = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "mktValue", 0.00))
+        buyHoldModelAux.Valuation = companyStatistic.Valuation
         buyHoldModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
         buyHoldModelAux.ReturnOnEquity_5yrAvg = companyStatistic.ReturnOnEquity_5yrAvg
         buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEbitida
         buyHoldModelAux.DividendYeld_5yrAvg = companyStatistic.DividendYeld_5yrAvg
-        buyHoldModelAux.AvgPayout5Years = cashFlowHistData.GetAvgDividendShared() / cashFlowHistData.GetAvgNetIncome()
-        buyHoldModelAux.HasDividendBeenSharedInLast5Yrs = cashFlowHistData.HasDividendBeenSharedInLast5Yrs()
-        buyHoldModelAux.HasDividendGrowthInLast5Yrs = cashFlowHistData.HasDividendGrowthInLast5Yrs()
-        buyHoldModelAux.HasNetProfitBeenRegularFor5Yrs = cashFlowHistData.HasNetProfitBeenRegularFor5Yrs()
+        buyHoldModelAux.AvgPayout5Years = financialHistData.GetAvgDividendShared() / financialHistData.GetAvgNetIncome()
+        buyHoldModelAux.HasDividendBeenSharedInLast5Yrs = financialHistData.HasDividendBeenSharedInLast5Yrs()
+        buyHoldModelAux.HasDividendGrowthInLast5Yrs = financialHistData.HasDividendGrowthInLast5Yrs()
+        buyHoldModelAux.HasNetProfitBeenRegularFor5Yrs = financialHistData.HasNetProfitBeenRegularFor5Yrs()
 
-        print("%s - OK" % { companyInfo.Code })
+        print("%s - OK" % companyInfo.Code)
 
         companyInfo = None
         companyStatistic = None
-        cashFlowHistData = None
+        financialHistData = None
 
         returnObj.append(buyHoldModelAux)
     return returnObj

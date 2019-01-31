@@ -1,5 +1,5 @@
-from models.cashFlowDataModel import CashFlowDataModel
-from models.cashFlowHistoryModel import CashFlowHistoryModel
+from models.financialDataModel import FinancialDataModel
+from models.financialHistoryModel import FinancialHistoryModel
 from helpers.web import Web
 from helpers.parser import Parser
 from datetime import date
@@ -14,26 +14,30 @@ sys.path.append("\\git\\SoSI\\backend")
 
 # GLOBAL
 URL_YAHOO_CASH_FLOW = "https://br.financas.yahoo.com/quote/%s.SA/cash-flow"
+URL_YAHOO_BALANCE_SHEET = "https://br.financas.yahoo.com/quote/%s.SA/balance-sheet"
 
 # FIELDS
 FIELD_SHARED_DIVIDENDS = "Dividendos Pagos"
 FIELD_NET_INCOME = "Lucro Líquido"
+FIELD_NET_INCOME = "Lucro Líquido"
+FIELD_NET_WORTH = "Patrimônio Líquido Total"
 
-
-class CashFlowHistoryCrawler(CashFlowHistoryModel):
+class FinancialHistoryCrawler(FinancialHistoryModel):
 
     def __init__(self, stockCode):
         self.Code = stockCode
         self.ListData = []
         self.DividendLabel = FIELD_SHARED_DIVIDENDS 
         self.NetIncomeLabel = FIELD_NET_INCOME
-        self.__setHistoryDate(FIELD_SHARED_DIVIDENDS, stockCode, True)
-        self.__setHistoryDate(FIELD_NET_INCOME, stockCode, False)
+        self.NetWorthLabel = FIELD_NET_WORTH
+        self.__setHistoryDate(FIELD_SHARED_DIVIDENDS, stockCode, URL_YAHOO_CASH_FLOW, True)
+        self.__setHistoryDate(FIELD_NET_INCOME, stockCode, URL_YAHOO_CASH_FLOW, False)
+        self.__setHistoryDate(FIELD_NET_WORTH, stockCode, URL_YAHOO_BALANCE_SHEET, False)
         pass
 
-    def __setHistoryDate(self, cashFlowRowToLookAt, stockCode, turnValueToPositive):
-        url = URL_YAHOO_CASH_FLOW % stockCode
-        page = Web.GetWebPage(url)
+    def __setHistoryDate(self, rowToLookAt, stockCode, url, turnValueToPositive):
+        urlAux = url % stockCode
+        page = Web.GetWebPage(urlAux)
 
         if page is None:
             return
@@ -62,7 +66,7 @@ class CashFlowHistoryCrawler(CashFlowHistoryModel):
             tdElement = tdElement.find_next_sibling("td")
 
         # gettin' the values related to the period
-        valueSection = page.find("span", text=re.compile(cashFlowRowToLookAt))
+        valueSection = page.find("span", text=re.compile(rowToLookAt))
         if valueSection is None:
             return
 
@@ -83,7 +87,7 @@ class CashFlowHistoryCrawler(CashFlowHistoryModel):
             else:
                 valueFloat = Parser.ParseFloat(valueAux)
 
-            cashFlowObj = CashFlowDataModel(cashFlowRowToLookAt, period, valueFloat)
+            cashFlowObj = FinancialDataModel(rowToLookAt, period, (valueFloat * 1000))
 
             self.ListData.append(cashFlowObj)
 

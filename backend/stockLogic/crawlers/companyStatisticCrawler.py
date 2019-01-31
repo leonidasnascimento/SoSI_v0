@@ -41,6 +41,7 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         roe_avg5yrs = ""
         dy = ""
         dy_avg5yrs = ""
+        valuation = ""
 
         url = (URL % stockCode)
         page = Web.GetWebPage(url)
@@ -54,6 +55,7 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
             self.ReturnOnEquity_5yrAvg = 0.00
             self.DividendYeld = 0.00
             self.DividendYeld_5yrAvg = 0.00
+            self.Valuation = 0.00
             return
 
         pgAvgVolume3Mos = page.find(text=re.compile('^Volume Médio \(3 meses\)'))
@@ -64,6 +66,7 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         pRoe_avg5yrs = ""
         pDy = ""
         pDy_avg5yrs = ""
+        pValuation = page.find(text=re.compile('^Valor da Empresa'))
 
         ##############################
         ##  YAHOO - KEY STATISTICS  ##
@@ -80,6 +83,9 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
 
         if not (pPayoutRatio is None):
             payoutRatio = pPayoutRatio.parent.parent.find_next_sibling("td").get_text()
+    
+        if not (pValuation is None):
+            valuation = pValuation.parent.parent.find_next_sibling("td").get_text()
 
         ###########
         ## ADVFN ##
@@ -121,6 +127,7 @@ class CompanyStatisticCrawler(CompanyStatistcModel):
         self.ReturnOnEquity = Parser.ParseFloat(roe)
         self.GrossDebitOverEbitida = Parser.ParseFloat(grossDebitEbitda) / 100 
         self.PayoutRatio = Parser.ParseFloat(payoutRatio)
+        self.Valuation = Parser.ParseOrdinalNumber(valuation)
         self.ReturnOnEquity_5yrAvg = float(roe_avg5yrs if roe_avg5yrs != "" and roe_avg5yrs != "--" and roe_avg5yrs != "-" else "0.00") / 100
         self.DividendYeld = float(dy if dy != "" and dy != "--" and dy != "-" else "0.00") / 100
         self.DividendYeld_5yrAvg = float(float(dy_avg5yrs if dy_avg5yrs != "" and dy_avg5yrs != "--" and dy_avg5yrs != "-" else "0.00")) / 100

@@ -8,4 +8,5 @@ class CompanyStatistcModel:
     PayoutRatio: 0.00
     DividendYeld: 0.00
     DividendYeld_5yrAvg: 0.00
+    Valuation: 0.00
 

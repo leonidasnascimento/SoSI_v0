@@ -14,9 +14,21 @@ from models.companyInfoModel import CompanyInfoModel
 
 ## GLOBAL
 URL_MEUS_DIVIDENDOS = "https://www.meusdividendos.com/empresa/%s"
-URL_YAHOO = "https://br.financas.yahoo.com/quote/%s.SA"
+URL_YAHOO = "https://br.financas.yahoo.com/quote/%s.SA/profile"
 
 class CompanyInfoCrawler(CompanyInfoModel):
+
+    stockTypeSwitcher = {
+        1: "ON",
+        2: "PN",
+        3: "ON",
+        4: "PN",
+        5: "PN",
+        6: "PN",
+        7: "PN",
+        8: "PN",
+        9: "ON"
+    }
 
     def __init__(self, stockCode):
         self.Code = stockCode
@@ -26,13 +38,29 @@ class CompanyInfoCrawler(CompanyInfoModel):
         self.Sector = ""
         self.Type = ""
 
-        self.__setCompanyName(stockCode)
+        self.__setCompanyNameSectorSubsector(stockCode)
         self.__setMajorShareholder(stockCode)
+        self.__setStockType(stockCode)
     
-    def __setCompanyName(self, stockCode):
+    def __setStockType(self, stockCode):
+        if stockCode == "" or stockCode == None: return
+        
+        lstWords = list(stockCode)
+
+        if lstWords is None: return
+        if len(lstWords) : return
+
+        stockNumber = lstWords[len(lstWords) - 1]
+
+        self.Type = self.stockTypeSwitcher.get(stockNumber, "ND")
+        pass
+
+    def __setCompanyNameSectorSubsector(self, stockCode):
         if stockCode == "" or stockCode == None: return
         
         self.Company = ""
+        self.Sector = ""
+        self.SecondSector = ""
 
         urlFormatted = URL_YAHOO % stockCode
         page = Web.GetWebPage(urlFormatted)
@@ -43,6 +71,22 @@ class CompanyInfoCrawler(CompanyInfoModel):
 
         compAux1 = str(h1.get_text()).replace(("(%s.SA)" % stockCode), "")
         self.Company = str(compAux1).rstrip(' ')
+
+        spanSector = page.find("span", text=re.compile('Setor'))
+        if spanSector is None: return
+        
+        spanSectorValue = spanSector.find_next_sibling("span")
+        if spanSectorValue is None: return
+
+        self.Sector = spanSectorValue.get_text()
+
+        spanSecondSector = page.find("span", text=re.compile('Indústria'))
+        if spanSecondSector is None: return
+        
+        spanSecondSectorValue = spanSecondSector.find_next_sibling("span")
+        if spanSecondSectorValue is None: return
+
+        self.SecondSector = spanSecondSectorValue.get_text()
 
         pass
 
