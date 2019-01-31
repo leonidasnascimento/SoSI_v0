@@ -37,11 +37,28 @@ class CompanyInfoCrawler(CompanyInfoModel):
         self.SecondSector = ""
         self.Sector = ""
         self.Type = ""
+        self.StockLastPrice = 0.00
 
         self.__setCompanyNameSectorSubsector(stockCode)
         self.__setMajorShareholder(stockCode)
         self.__setStockType(stockCode)
+        self.__setStockLastPrice(stockCode)
     
+    def __setStockLastPrice(self, stockCode):
+        if stockCode == "" or stockCode == None: return
+        
+        urlFormatted = URL_YAHOO % stockCode
+        page = Web.GetWebPage(urlFormatted)
+        if page is None: return
+
+        spanLastPrice = page.find("span", class_="Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)")
+        if spanLastPrice is None: return
+
+        value = spanLastPrice.get_text()
+        self.StockLastPrice = value
+        
+        pass
+
     def __setStockType(self, stockCode):
         if stockCode == "" or stockCode == None: return
         

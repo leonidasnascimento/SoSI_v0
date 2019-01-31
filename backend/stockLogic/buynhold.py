@@ -42,7 +42,7 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.Code = companyInfo.Code
         buyHoldModelAux.Company = companyInfo.Company
         buyHoldModelAux.Type = companyInfo.Type
-        buyHoldModelAux.StockPrice = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockPrice", 0.00))
+        buyHoldModelAux.StockPrice = companyInfo.StockLastPrice
         buyHoldModelAux.Sector = companyInfo.Sector
         buyHoldModelAux.SecondSector = companyInfo.SecondSector
         buyHoldModelAux.Equity = financialHistData.GetLastNetWorth()

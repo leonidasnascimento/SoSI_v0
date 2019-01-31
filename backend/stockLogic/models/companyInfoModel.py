@@ -5,3 +5,4 @@ class CompanyInfoModel:
     Sector: ""
     SecondSector: ""
     MajorShareholder: ""
+    StockLastPrice: 0.00
