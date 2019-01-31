@@ -6,3 +6,4 @@ class CompanyInfoModel:
     SecondSector: ""
     MajorShareholder: ""
     StockLastPrice: 0.00
+    StockAmountAvailable: 0.00

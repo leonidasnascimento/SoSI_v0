@@ -51,7 +51,7 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.DividendPeriod = 0
         buyHoldModelAux.DividendYeld = companyStatistic.DividendYeld
         buyHoldModelAux.NetProfit = financialHistData.GetLastNetIncome()
-        buyHoldModelAux.StockAvailableAmount = float(GetBasicInfo(stockObj.StocksBasicInfo, stock["stockCode"], "stockAmount", 0))
+        buyHoldModelAux.StockAvailableAmount = companyInfo.StockAmountAvailable
         buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRatio
         buyHoldModelAux.DividendTotalValueShared = companyStatistic.PayoutRatio * buyHoldModelAux.NetProfit
         buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder

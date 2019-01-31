@@ -38,12 +38,36 @@ class CompanyInfoCrawler(CompanyInfoModel):
         self.Sector = ""
         self.Type = ""
         self.StockLastPrice = 0.00
+        self.StockAmountAvailable = 0.00
 
         self.__setCompanyNameSectorSubsector(stockCode)
         self.__setMajorShareholder(stockCode)
         self.__setStockType(stockCode)
         self.__setStockLastPrice(stockCode)
-    
+        self.__setStockAmountAvailable(stockCode)
+
+    def __setStockAmountAvailable(self, stockCode):
+        if stockCode == "" or stockCode == None: return
+        
+        self.StockAmountAvailable = 0.00
+
+        lstWords = list(stockCode)
+        urlFormatted = URL_MEUS_DIVIDENDOS % str(stockCode).replace(lstWords[len(lstWords)-1], '')
+        
+        page = Web.GetWebPage(urlFormatted)
+        if page is None: return
+
+        spanStocks = page.find("span", text=re.compile('Ações em Circulação'))
+        if spanStocks is None: return
+        
+        spanStocksValue = spanStocks.find_next_sibling("span")
+        if spanStocksValue is None: return
+
+        value = spanStocksValue.get_text()
+        self.StockAmountAvailable = float(value)
+
+        pass
+
     def __setStockLastPrice(self, stockCode):
         if stockCode == "" or stockCode == None: return
         
@@ -56,7 +80,7 @@ class CompanyInfoCrawler(CompanyInfoModel):
 
         value = spanLastPrice.get_text()
         self.StockLastPrice = value
-        
+
         pass
 
     def __setStockType(self, stockCode):
