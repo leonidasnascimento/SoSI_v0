@@ -1,7 +1,6 @@
 from models.dividendDataModel import DividendDataModel
 
 ## GLOBAL
-
 JCP_DESCRIPTION = "JCP"
 DIVIDEND_DESCRIPTION = "DIVIDEND"
 
@@ -30,7 +29,20 @@ class DividendHistoryModel:
 
         return resultList
     
-    def GetLastDividendValue(self):
+    def GetDividendLastValue(self):
         lst = self.GetItemByDescription(DIVIDEND_DESCRIPTION)
 
         if lst is None or len(lst) == 0: return 0.00
+
+        value = lst[len(lst) - 1]
+
+        return value
+    
+    def GetJCPLastValue(self):
+        lst = self.GetItemByDescription(JCP_DESCRIPTION)
+
+        if lst is None or len(lst) == 0: return 0.00
+
+        value = lst[len(lst) - 1]
+
+        return value
