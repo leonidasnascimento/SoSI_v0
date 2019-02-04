@@ -11,6 +11,7 @@ from crawlers.financialHistoryCrawler import FinancialHistoryCrawler
 from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
 from crawlers.stockCrawler import StockCrawler
+from crawlers.dividendHistoryCrawler import DividendHistoryCrawler
 
 ### GLOBAL CONSTANTS ###
 STOCK_TYPE_TO_FILTER = ""  # Leave it empty for all types
@@ -38,6 +39,7 @@ def GetBuyNHoldModel(stockObj):
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
         companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
         financialHistData = FinancialHistoryCrawler(stock["stockCode"])
+        dividendCrawler = DividendHistoryCrawler(stock["stockCode"], 12)
 
         buyHoldModelAux.Code = companyInfo.Code
         buyHoldModelAux.Company = companyInfo.Company
@@ -47,8 +49,8 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.SecondSector = companyInfo.SecondSector
         buyHoldModelAux.Equity = financialHistData.GetLastNetWorth()
         buyHoldModelAux.Avg21Negociation = companyStatistic.AvgVolume3Months
-        buyHoldModelAux.DividendLastPrice = float(GetDividendValue(stockObj.DividendsData, stock["stockCode"], 1, 0.00))
-        buyHoldModelAux.DividendPeriod = 0
+        buyHoldModelAux.DividendLastPrice = dividendCrawler.GetDividendLastValue()
+        buyHoldModelAux.DividendPeriod = dividendCrawler.GetDividendPeriod()
         buyHoldModelAux.DividendYeld = companyStatistic.DividendYeld
         buyHoldModelAux.NetProfit = financialHistData.GetLastNetIncome()
         buyHoldModelAux.StockAvailableAmount = companyInfo.StockAmountAvailable
@@ -70,46 +72,10 @@ def GetBuyNHoldModel(stockObj):
         companyInfo = None
         companyStatistic = None
         financialHistData = None
+        dividendCrawler = None
 
         returnObj.append(buyHoldModelAux)
     return returnObj
-
-
-def GetBasicInfo(lstToDigInto, stockCode, fieldToGet, defaultValue):
-    if lstToDigInto is None:
-        return defaultValue
-
-    lstReturn = []
-    lstReturn = [x[fieldToGet]
-                 for x in lstToDigInto if x["stock"] == stockCode]
-
-    if lstReturn is None or len(lstReturn) == 0:
-        return defaultValue
-
-    return lstReturn[0] if str(lstReturn[0]) != "" or str(lstReturn[0]) != '' else defaultValue
-
-
-def GetDividendValue(lstToDigInto, stockCode, order: 1, defaultValue):
-    if lstToDigInto is None:
-        return defaultValue
-
-    lstDividend = []
-    lstDividend = [x["dividends"]
-                   for x in lstToDigInto if x["stockCode"] == stockCode]
-    dividendPrice = defaultValue
-
-    if lstDividend is None or len(lstDividend) == 0:
-        return defaultValue
-    if lstDividend[0] is None or len(lstDividend[0]) == 0:
-        return defaultValue
-
-    if order == 1:
-        dividendPrice = lstDividend[0][0]['dividend']
-    else:
-        dividendPrice = lstDividend[0][len(lstDividend[0]) - 1]['dividend']
-
-    return dividendPrice if dividendPrice != "" else defaultValue
-
 
 def Save(lstDividend):
     for dividend in lstDividend:
@@ -120,7 +86,6 @@ def Save(lstDividend):
 #########
 ## INI ##
 #########
-
 
 stockObj = StockCrawler(STOCK_TYPE_TO_FILTER)
 lstDividend = GetBuyNHoldModel(stockObj)
