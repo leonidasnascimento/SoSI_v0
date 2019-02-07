@@ -12,6 +12,7 @@ from crawlers.companyStatisticCrawler import CompanyStatisticCrawler
 from crawlers.companyInfoCrawler import CompanyInfoCrawler
 from crawlers.stockCrawler import StockCrawler
 from crawlers.dividendHistoryCrawler import DividendHistoryCrawler
+from crawlers.stockPriceHistoryCrawler import StockPriceHistoryCrawler
 
 ### GLOBAL CONSTANTS ###
 STOCK_TYPE_TO_FILTER = ""  # Leave it empty for all types
@@ -39,16 +40,17 @@ def GetBuyNHoldModel(stockObj):
         companyInfo = CompanyInfoCrawler(stock["stockCode"])
         companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
         financialHistData = FinancialHistoryCrawler(stock["stockCode"])
+        stockPriceCrawler = StockPriceHistoryCrawler(stock["stockCode"], 30)
         dividendCrawler = DividendHistoryCrawler(stock["stockCode"], 12)
 
         buyHoldModelAux.Code = companyInfo.Code
         buyHoldModelAux.Company = companyInfo.Company
         buyHoldModelAux.Type = companyInfo.Type
-        buyHoldModelAux.StockPrice = companyInfo.StockLastPrice
+        buyHoldModelAux.StockPrice = stockPriceCrawler.GetLastStockPrice()
         buyHoldModelAux.Sector = companyInfo.Sector
         buyHoldModelAux.SecondSector = companyInfo.SecondSector
         buyHoldModelAux.Equity = financialHistData.GetLastNetWorth()
-        buyHoldModelAux.Avg21Negociation = companyStatistic.AvgVolume3Months
+        buyHoldModelAux.Avg21Negociation = stockPriceCrawler.GetAvgVolume()
         buyHoldModelAux.DividendLastPrice = dividendCrawler.GetDividendLastValue()
         buyHoldModelAux.DividendPeriod = dividendCrawler.GetDividendPeriod()
         buyHoldModelAux.DividendYeld = companyStatistic.DividendYeld

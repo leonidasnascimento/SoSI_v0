@@ -53,8 +53,4 @@ class DividendHistoryCrawler(DividendHistoryModel):
             valueVal = float(valueCell)
 
             self.AddDividend(dateVal, valueVal)
-
-        # Reseting locale
-        locale.resetlocale()
-
         pass

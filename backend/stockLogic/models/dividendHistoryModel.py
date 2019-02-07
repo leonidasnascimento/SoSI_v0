@@ -30,13 +30,19 @@ class DividendHistoryModel:
         return resultList
 
     def GetDividendLastValue(self):
-        return self.__getLastItemFromListByDescription(DIVIDEND_DESCRIPTION)
+        data = self.__getLastItemFromListByDescription(DIVIDEND_DESCRIPTION)
+        if data is None: return 0.00
+        
+        return data.Value
 
     def GetDividendPeriod(self):
         return -1
 
     def GetJCPLastValue(self):
-        return self.__getLastItemFromListByDescription(JCP_DESCRIPTION)
+        data = self.__getLastItemFromListByDescription(JCP_DESCRIPTION)
+        if data is None: return 0.00
+        
+        return data.Value
 
     def __getLastItemFromListByDescription(self, description):
         lst = self.GetItemByDescription(description)
