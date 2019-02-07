@@ -47,7 +47,7 @@ class DividendHistoryModel:
     def __getLastItemFromListByDescription(self, description):
         lst = self.GetItemByDescription(description)
 
-        if lst is None or len(lst) == 0: return 0.00
+        if lst is None or len(lst) == 0: return None
 
         value = lst[len(lst) - 1]
 

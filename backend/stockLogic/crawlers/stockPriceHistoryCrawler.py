@@ -53,13 +53,38 @@ class StockPriceHistoryCrawler(StockPriceHistoryModel):
             if valuesCell is None: continue
             if len(valuesCell) < 6: continue
 
+            v1 = ""
+            v2 = ""
+            v3 = ""
+            v4 = ""
+            v5 = ""
+            v6 = ""
+
+            if not (valuesCell[0].find("span") is None):
+                v1 = valuesCell[0].find("span").get_text()
+
+            if not (valuesCell[1].find("span") is None):
+                v2 = valuesCell[1].find("span").get_text()
+
+            if not (valuesCell[2].find("span") is None):
+                v3 = valuesCell[2].find("span").get_text()
+
+            if not (valuesCell[3].find("span") is None):
+                v4 = valuesCell[3].find("span").get_text()
+
+            if not (valuesCell[4].find("span") is None):
+                v5 = valuesCell[4].find("span").get_text()
+
+            if not (valuesCell[5].find("span") is None):
+                v6 = valuesCell[5].find("span").get_text()
+
             dateVal = datetime.strptime(dateCell, "%d de %b de %Y")
-            openig = Parser.ParseFloat(valuesCell[0].find("span").get_text())
-            high = Parser.ParseFloat(valuesCell[1].find("span").get_text())
-            low = Parser.ParseFloat(valuesCell[2].find("span").get_text())
-            closing = Parser.ParseFloat(valuesCell[3].find("span").get_text())
-            adjusted = Parser.ParseFloat(valuesCell[4].find("span").get_text())
-            volume = Parser.ParseFloat(valuesCell[5].find("span").get_text())
+            openig = Parser.ParseFloat(v1)
+            high = Parser.ParseFloat(v2)
+            low = Parser.ParseFloat(v3)
+            closing = Parser.ParseFloat(v4)
+            adjusted = Parser.ParseFloat(v5)
+            volume = Parser.ParseFloat(v6)
 
             self.AddStockPrice(high, low, openig, closing, adjusted, volume, dateVal)        
         pass

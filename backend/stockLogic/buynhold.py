@@ -26,14 +26,12 @@ FIELD_RESULTS = "results"
 FIELD_TYPE = "type"
 
 # METHODS #
-def GetBuyNHoldModel(stockObj):
+def ProcessBuyHoldCrwalingEngine(stockObj):
     if stockObj is None:
         return
 
     if stockObj.AvailableStockCode is None:
         return
-
-    returnObj = []
 
     for stock in stockObj.AvailableStockCode:
         buyHoldModelAux = BuyNHoldeModel()
@@ -69,30 +67,24 @@ def GetBuyNHoldModel(stockObj):
         buyHoldModelAux.HasDividendGrowthInLast5Yrs = financialHistData.HasDividendGrowthInLast5Yrs()
         buyHoldModelAux.HasNetProfitBeenRegularFor5Yrs = financialHistData.HasNetProfitBeenRegularFor5Yrs()
 
-        print("%s - OK" % companyInfo.Code)
+        # Saving
+        if BuyNHoldDbCommand().Save(buyHoldModelAux) == True:
+            print("%s - OK" % companyInfo.Code)
+        else:
+            raise SystemError()
 
         companyInfo = None
         companyStatistic = None
         financialHistData = None
         dividendCrawler = None
 
-        returnObj.append(buyHoldModelAux)
-    return returnObj
-
-def Save(lstDividend):
-    for dividend in lstDividend:
-        if BuyNHoldDbCommand().Save(dividend) == False:
-            return False
-    return True
+    pass
 
 #########
 ## INI ##
 #########
 
 stockObj = StockCrawler(STOCK_TYPE_TO_FILTER)
-lstDividend = GetBuyNHoldModel(stockObj)
-
-if (lstDividend is None) or (Save(lstDividend)) == False:
-    raise SystemError()
+ProcessBuyHoldCrwalingEngine(stockObj)
 
 print("DONE!!!")
