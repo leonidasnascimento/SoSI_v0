@@ -89,11 +89,15 @@ class CompanyInfoCrawler(CompanyInfoModel):
         lstWords = list(stockCode)
 
         if lstWords is None: return
-        if len(lstWords) : return
+        if len(lstWords) == 0: return
 
         stockNumber = lstWords[len(lstWords) - 1]
+        typeAux = ""
 
-        self.Type = self.stockTypeSwitcher.get(stockNumber, "ND")
+        if(str(stockNumber).isnumeric()): 
+            typeAux = self.stockTypeSwitcher.get(int(stockNumber), "ND")
+
+        self.Type = typeAux 
         pass
 
     def __setCompanyNameSectorSubsector(self, stockCode):

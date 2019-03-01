@@ -84,8 +84,8 @@ class StockCrawler(object):
 
             __availableStocksSingleton.append(stockAux)
 
-        return __availableStocksSingleton
-        # return [x for x in __availableStocksSingleton if (x["stockCode"] == "ITUB3" or x["stockCode"] == "BBDC3" or x["stockCode"] == "CSAN3")]
+        # return __availableStocksSingleton
+        return [x for x in __availableStocksSingleton if (x["stockCode"] == "ITUB3" or x["stockCode"] == "BBDC3" or x["stockCode"] == "CSAN3")]
 
     def PrintProgress(self, actual, target):
         print(float((actual/target)*100).__round__(2))
