@@ -34,50 +34,51 @@ def ProcessBuyHoldCrwalingEngine(stockObj):
         return
 
     for stock in stockObj.AvailableStockCode:
-        buyHoldModelAux = BuyNHoldeModel()
-        companyInfo = CompanyInfoCrawler(stock["stockCode"])
-        companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
-        financialHistData = FinancialHistoryCrawler(stock["stockCode"])
-        stockPriceCrawler = StockPriceHistoryCrawler(stock["stockCode"], 30)
-        dividendCrawler = DividendHistoryCrawler(stock["stockCode"], 12)
+        try:
+            buyHoldModelAux = BuyNHoldeModel()
+            companyInfo = CompanyInfoCrawler(stock["stockCode"])
+            companyStatistic = CompanyStatisticCrawler(stock["stockCode"])
+            financialHistData = FinancialHistoryCrawler(stock["stockCode"])
+            stockPriceCrawler = StockPriceHistoryCrawler(stock["stockCode"], 30)
+            dividendCrawler = DividendHistoryCrawler(stock["stockCode"], 12)
 
-        buyHoldModelAux.Code = companyInfo.Code
-        buyHoldModelAux.Company = companyInfo.Company
-        buyHoldModelAux.Type = companyInfo.Type
-        buyHoldModelAux.StockPrice = stockPriceCrawler.GetLastStockPrice()
-        buyHoldModelAux.Sector = companyInfo.Sector
-        buyHoldModelAux.SecondSector = companyInfo.SecondSector
-        buyHoldModelAux.Equity = financialHistData.GetLastNetWorth()
-        buyHoldModelAux.Avg21Negociation = stockPriceCrawler.GetAvgVolume()
-        buyHoldModelAux.DividendLastPrice = dividendCrawler.GetDividendLastValue()
-        buyHoldModelAux.DividendPeriod = dividendCrawler.GetDividendPeriod()
-        buyHoldModelAux.DividendYeld = companyStatistic.DividendYeld
-        buyHoldModelAux.NetProfit = financialHistData.GetLastNetIncome()
-        buyHoldModelAux.StockAvailableAmount = companyInfo.StockAmountAvailable
-        buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRatio
-        buyHoldModelAux.DividendTotalValueShared = companyStatistic.PayoutRatio * buyHoldModelAux.NetProfit
-        buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
-        buyHoldModelAux.Valuation = companyStatistic.Valuation
-        buyHoldModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
-        buyHoldModelAux.ReturnOnEquity_5yrAvg = companyStatistic.ReturnOnEquity_5yrAvg
-        buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEbitida
-        buyHoldModelAux.DividendYeld_5yrAvg = companyStatistic.DividendYeld_5yrAvg
-        buyHoldModelAux.AvgPayout5Years = financialHistData.GetAvgDividendShared() / financialHistData.GetAvgNetIncome()
-        buyHoldModelAux.HasDividendBeenSharedInLast5Yrs = financialHistData.HasDividendBeenSharedInLast5Yrs()
-        buyHoldModelAux.HasDividendGrowthInLast5Yrs = financialHistData.HasDividendGrowthInLast5Yrs()
-        buyHoldModelAux.HasNetProfitBeenRegularFor5Yrs = financialHistData.HasNetProfitBeenRegularFor5Yrs()
+            buyHoldModelAux.Code = companyInfo.Code
+            buyHoldModelAux.Company = companyInfo.Company
+            buyHoldModelAux.Type = companyInfo.Type
+            buyHoldModelAux.StockPrice = stockPriceCrawler.GetLastStockPrice()
+            buyHoldModelAux.Sector = companyInfo.Sector
+            buyHoldModelAux.SecondSector = companyInfo.SecondSector
+            buyHoldModelAux.Equity = financialHistData.GetLastNetWorth()
+            buyHoldModelAux.Avg21Negociation = stockPriceCrawler.GetAvgVolume()
+            buyHoldModelAux.DividendLastPrice = dividendCrawler.GetDividendLastValue()
+            buyHoldModelAux.DividendPeriod = dividendCrawler.GetDividendPeriod()
+            buyHoldModelAux.DividendYeld = companyStatistic.DividendYeld
+            buyHoldModelAux.NetProfit = financialHistData.GetLastNetIncome()
+            buyHoldModelAux.StockAvailableAmount = companyInfo.StockAmountAvailable
+            buyHoldModelAux.AvgPayout12Months = companyStatistic.PayoutRatio
+            buyHoldModelAux.DividendTotalValueShared = companyStatistic.PayoutRatio * buyHoldModelAux.NetProfit
+            buyHoldModelAux.MajorShareholder = companyInfo.MajorShareholder
+            buyHoldModelAux.Valuation = companyStatistic.Valuation
+            buyHoldModelAux.ReturnOnEquity = companyStatistic.ReturnOnEquity
+            buyHoldModelAux.ReturnOnEquity_5yrAvg = companyStatistic.ReturnOnEquity_5yrAvg
+            buyHoldModelAux.GrossDebitOverEbitda = companyStatistic.GrossDebitOverEbitida
+            buyHoldModelAux.DividendYeld_5yrAvg = companyStatistic.DividendYeld_5yrAvg
+            buyHoldModelAux.AvgPayout5Years = financialHistData.GetAvgDividendShared() / financialHistData.GetAvgNetIncome()
+            buyHoldModelAux.HasDividendBeenSharedInLast5Yrs = financialHistData.HasDividendBeenSharedInLast5Yrs()
+            buyHoldModelAux.HasDividendGrowthInLast5Yrs = financialHistData.HasDividendGrowthInLast5Yrs()
+            buyHoldModelAux.HasNetProfitBeenRegularFor5Yrs = financialHistData.HasNetProfitBeenRegularFor5Yrs()
 
-        # Saving
-        if BuyNHoldDbCommand().Save(buyHoldModelAux) == True:
-            print("%s - OK" % companyInfo.Code)
-        else:
-            raise SystemError()
+            # Saving
+            if BuyNHoldDbCommand().Save(buyHoldModelAux) == True:
+                print("%s - OK" % companyInfo.Code)
+            else:
+                raise SystemError()
 
-        companyInfo = None
-        companyStatistic = None
-        financialHistData = None
-        dividendCrawler = None
+            pass
+        except:
+            print("%s - NOK" % companyInfo.Code)
 
+            pass
     pass
 
 #########
