@@ -9,5 +9,4 @@ https://hostpresto.com/community/tutorials/how-to-connect-to-a-remote-mysql-serv
 https://www.linode.com/community/questions/7934/cant-log-in-to-ssh-via-putty
 
 # Hash
-leonidas01
 Yt2G9d4aGMrRgwhm
