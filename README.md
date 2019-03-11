@@ -4,5 +4,10 @@
 # Install MySQL on Debian 9
 https://blog.remontti.com.br/2054
 
+# Some Important Configuration
+https://hostpresto.com/community/tutorials/how-to-connect-to-a-remote-mysql-server-via-an-ssh-tunnel/
+https://www.linode.com/community/questions/7934/cant-log-in-to-ssh-via-putty
+
 # Hash
+leonidas01
 Yt2G9d4aGMrRgwhm
