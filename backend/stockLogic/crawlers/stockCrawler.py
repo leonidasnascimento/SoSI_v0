@@ -3,7 +3,7 @@ import time
 import threading
 
 # ADDING ITEMS TO SYS.PATH #
-sys.path.append("\\git\\SoSI\\backend")
+sys.path.append("\\var\\www\\git\\sosi\\backend")
 
 from helpers.web import Web
 from helpers.parser import Parser

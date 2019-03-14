@@ -10,3 +10,4 @@ https://www.linode.com/community/questions/7934/cant-log-in-to-ssh-via-putty
 
 # Hash
 Yt2G9d4aGMrRgwhm
+sosiuser|4S86yySdBpLgcVKT

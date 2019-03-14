@@ -5,7 +5,7 @@ import requests
 import sys
 
 # ADDING ITEMS TO SYS.PATH #
-sys.path.append("\\git\\SoSI\\backend")
+sys.path.append("\\var\\www\\git\\sosi\\backend")
 
 class Web:
     @staticmethod
