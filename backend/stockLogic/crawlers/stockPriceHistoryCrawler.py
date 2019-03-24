@@ -5,7 +5,7 @@ import re
 import locale
 
 # ADDING ITEMS TO SYS.PATH #
-sys.path.append("\\var\\www\\git\\sosi\\backend")
+sys.path.append("\\git\\SoSI\\backend")
 
 from dateutil import parser
 from datetime import datetime

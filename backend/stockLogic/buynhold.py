@@ -2,7 +2,7 @@ import pprint
 import sys
 
 # ADDING ITEMS TO SYS.PATH #
-sys.path.append("\\var\\www\\git\\sosi\\backend")
+sys.path.append("\\git\\SoSI\\backend")
 
 from database.buyNHoldDbCommand import BuyNHoldDbCommand
 from helpers.parser import Parser

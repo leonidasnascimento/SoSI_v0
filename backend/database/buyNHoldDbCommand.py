@@ -1,6 +1,7 @@
 import sys
 
-sys.path.append("\\var\\www\\git\\sosi\\backend")
+# ADDING ITEMS TO SYS.PATH #
+sys.path.append("\\git\\SoSI\\backend")
 
 from database.base.dbCommand import DbCommand
 from stockLogic.models.buynHoldModel import BuyNHoldeModel

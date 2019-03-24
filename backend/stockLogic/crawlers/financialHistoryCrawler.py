@@ -9,8 +9,7 @@ import threading
 import re
 
 # ADDING ITEMS TO SYS.PATH #
-sys.path.append("\\var\\www\\git\\sosi\\backend")
-
+sys.path.append("\\git\\SoSI\\backend")
 
 # GLOBAL
 URL_YAHOO_CASH_FLOW = "https://br.financas.yahoo.com/quote/%s.SA/cash-flow"
