@@ -3,24 +3,24 @@ from mysql.connector import Error
 
 class DbCommand:
     # PRD SERVER
+    # config = {
+    #     'user': 'root',
+    #     'password': 'sosidb',
+    #     'host': '127.0.0.1',
+    #     'port': 3306,
+    #     'database': 'sys',
+    #     'raise_on_warnings': True  # Can't touch this
+    # }
+
+    # LOCAL DB
     config = {
-        'user': 'root',
+        'user': 'sosi',
         'password': 'sosidb',
         'host': '127.0.0.1',
         'port': 3306,
         'database': 'sys',
-        'raise_on_warnings': True  # Can't touch this
+        'raise_on_warnings': True # Can't touch this
     }
-
-    # LOCAL DB
-    # config = {
-    #     'user': 'sosi',
-    #     'password': 'sosidb',
-    #     'host': '127.0.0.1',
-    #     'port': 3306
-    #     'database': 'sys',
-    #     'raise_on_warnings': True # Can't touch this
-    # }
 
     def Commit(self, strCommand):
         try:
