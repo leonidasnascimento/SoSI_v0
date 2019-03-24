@@ -1,5 +1,6 @@
 import pprint
 import sys
+import traceback
 
 # ADDING ITEMS TO SYS.PATH #
 sys.path.append("\\git\\SoSI\\backend")
@@ -76,6 +77,7 @@ def ProcessBuyHoldCrwalingEngine(stockObj):
             pass
         except Exception as e:
             print("%s - NOK - %s" % (companyInfo.Code, str(e)))
+            traceback.print_exc()
             pass
     pass
 
