@@ -72,12 +72,10 @@ def ProcessBuyHoldCrwalingEngine(stockObj):
             if BuyNHoldDbCommand().Save(buyHoldModelAux) == True:
                 print("%s - OK" % companyInfo.Code)
             else:
-                raise SystemError()
-
+                print("%s - NOK" % companyInfo.Code)
             pass
-        except:
-            print("%s - NOK" % companyInfo.Code)
-
+        except Exception as e:
+            print("%s - NOK - %s" % (companyInfo.Code, str(e)))
             pass
     pass
 
