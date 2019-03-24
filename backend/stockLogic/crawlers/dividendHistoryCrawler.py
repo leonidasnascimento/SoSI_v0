@@ -31,7 +31,7 @@ class DividendHistoryCrawler(DividendHistoryModel):
         if periodInMonths == 0: 
             periodInMonths = 1
         
-        locale.setlocale(locale.LC_ALL, 'pt_BR')
+        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
         period1 = date.today() - relativedelta(months=periodInMonths)
         period2 = date.today()

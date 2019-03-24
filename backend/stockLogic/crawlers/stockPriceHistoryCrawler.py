@@ -32,7 +32,7 @@ class StockPriceHistoryCrawler(StockPriceHistoryModel):
         if periodInDays == 0: 
             periodInDays = 1
         
-        locale.setlocale(locale.LC_ALL, 'pt_BR')
+        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
         period1 = date.today() - relativedelta(days=periodInDays)
         period2 = date.today()
