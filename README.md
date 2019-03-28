@@ -7,6 +7,7 @@ https://unix.stackexchange.com/a/446749
 https://hostpresto.com/community/tutorials/how-to-connect-to-a-remote-mysql-server-via-an-ssh-tunnel/
 https://www.linode.com/community/questions/7934/cant-log-in-to-ssh-via-putty
 https://hostpresto.com/community/tutorials/how-to-connect-to-a-remote-mysql-server-via-an-ssh-tunnel/
+https://rewry.blogspot.com/2011/10/desabilitando-o-case-sensitive-do-mysql.html
 
 # Hash
 Yt2G9d4aGMrRgwhm
