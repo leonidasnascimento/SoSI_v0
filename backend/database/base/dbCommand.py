@@ -30,6 +30,9 @@ class DbCommand:
                 rowsAffected = cursor.execute(strCommand)
 
                 conn.commit()
+
+                print("*********** EXECUTEI O COMMIT **********")
+
         except Error as e:
             print(e + ' - ' + strCommand)
         finally:
