@@ -19,5 +19,8 @@ class BuyNHoldDbCommand:
             obj.DividendYeld_5yrAvg, obj.HasDividendBeenSharedInLast5Yrs, 
             obj.HasDividendGrowthInLast5Yrs, obj.HasNetProfitBeenRegularFor5Yrs)
 
+        strCmd = "CALL SP_INSERT_DIVIDEND ('%s', '%s', '%s', '%s', %.6f, '%s', %.6f, %d, %.6f, %d, %.6f, %.6f, %.6f, %.6f, %.6f, '%s', %.6f, %.6f, %.6f, %.6f, %i, %i, %i);" % args
+        print (strCmd)
+        
         return DbCommand().Commit(strCmd)        
         # return DbCommand().CallProcedure("SP_INSERT_DIVIDEND", args)
