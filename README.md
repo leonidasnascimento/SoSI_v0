@@ -15,6 +15,7 @@ sosiuser|4S86yySdBpLgcVKT
 
 # Befor Running
 export PYTHONPATH=.:/var/www/git/sosi/backend/:/usr/src/Python-3.7.2/:
-sed -i 's/^# *\(pt_BR.UTF-8\)/\1/' /etc/locale.gen && locale-gen
-python3.7 backend/stockLogic/buynhold.py 
+## sed -i 's/^# *\(pt_BR.UTF-8\)/\1/' /etc/locale.gen && locale-gen
+localectl set-locale LANG=pt_BR.utf8
+python3.7 /var/www/git/sosi/backend/stockLogic/buynhold.py 
 
