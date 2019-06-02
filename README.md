@@ -13,9 +13,20 @@ https://rewry.blogspot.com/2011/10/desabilitando-o-case-sensitive-do-mysql.html
 Yt2G9d4aGMrRgwhm
 sosiuser|4S86yySdBpLgcVKT
 
-# Befor Running
+#################
+# Befor Running #
+#################
+
+## Local Machine
+cd /root/
 export PYTHONPATH=.:/var/www/git/sosi/backend/:/usr/src/Python-3.7.2/:
-## sed -i 's/^# *\(pt_BR.UTF-8\)/\1/' /etc/locale.gen && locale-gen
 localectl set-locale LANG=pt_BR.utf8
 python3.7 /var/www/git/sosi/backend/stockLogic/buynhold.py 
+
+## Pipeline (DevOps) environment
+cd /distelli/envs/SoSI-CICD-Env/backend/stockLogic/
+export PYTHONPATH=.:/distelli/envs/SoSI-CICD-Env/backend/:/usr/src/Python-3.7.2/:
+localectl set-locale LANG=pt_BR.utf8
+python3.7 buynhold.py 
+
 
