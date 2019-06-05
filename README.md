@@ -24,9 +24,23 @@ localectl set-locale LANG=pt_BR.utf8
 python3.7 /var/www/git/sosi/backend/stockLogic/buynhold.py 
 
 ## Pipeline (DevOps) environment
-cd /distelli/envs/SoSI-CICD-Env/backend/stockLogic/
-export PYTHONPATH=.:/distelli/envs/SoSI-CICD-Env/backend/:/usr/src/Python-3.7.2/:
+#### Pre Install
+sudo dpkg --configure -a
+#### Pos Install
+sudo apt-get install build-essential checkinstall --assume-yes
+sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev \
+    libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev --assume-yes
+cd /usr/src
+sudo wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz
+sudo tar xzf Python-3.7.3.tgz
+cd Python-3.7.3
+sudo ./configure --enable-optimizations
+sudo make altinstall
+#### Exec
+cd /distelli/envs/SoSI-CICD-Env/backend/stockLogic
+export PYTHONPATH=".:/distelli/envs/SoSI-CICD-Env/backend/:/usr/local/lib/python3.7:/usr/local/:/usr/local/bin/"
+export PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin"
 localectl set-locale LANG=pt_BR.utf8
+echo $PYTHONPATH
+echo $PATH
 python3.7 buynhold.py 
-
-
