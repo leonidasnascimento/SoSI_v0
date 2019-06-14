@@ -28,4 +28,3 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     ArtifactName: '$(Build.BuildId)'
-    publishLocation: 'Container'
