@@ -37,7 +37,7 @@ pywin32-ctypes==0.2.0
 requests==2.21.0
 six==1.11.0
 sshtunnel==0.1.4
-urllib3==1.24.1
+urllib3==1.26.5
 wrapt==1.10.11
 xlrd==1.2.0
 zope.interface==4.6.0
