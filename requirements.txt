@@ -20,7 +20,7 @@ macholib==1.11
 mccabe==0.6.1
 mysql-connector==2.1.7
 mysql-connector-python==8.0.13
-numpy==1.16.1
+numpy==1.22.0
 openpyxl==2.6.0
 pandas==0.24.1
 paramiko==2.4.2
